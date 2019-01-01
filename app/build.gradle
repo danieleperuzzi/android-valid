@@ -1,4 +1,11 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+project.ext.library_version = '0.1'
+project.ext.library_url = 'https://github.com/danieleperuzzi/android-valid'
+project.ext.library_git_url = 'https://github.com/danieleperuzzi/android-valid.git'
+project.ext.library_description = 'This library allows you to do simple and easy field validation on your Android App'
 
 android {
     compileSdkVersion 28
@@ -6,31 +13,90 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
-        versionName "0.1"
+        versionName project.library_version
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'consumer-proguard-rules.pro'
         }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    dataBinding {
-        enabled = true
-    }
 }
 
 dependencies {
-    def support_version = "28.0.0"
+    def support_version = '28.0.0'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:design:$support_version"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name 'Valid'
+            description project.library_description
+            url project.library_url
+            inceptionYear '2019'
+
+            packaging 'aar'
+            groupId 'com.danieleperuzzi'
+            artifactId 'android-valid'
+            version project.library_version
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                connection project.library_git_url
+                url project.library_url
+
+            }
+            developers {
+                developer {
+                    name 'Daniele Peruzzi'
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+
+    def privateKeyPassphrase = project.hasProperty('bintrayGpgPrivateKeyPassphrase') ? project.property('bintrayGpgPrivateKeyPassphrase') : System.getenv('BINTRAY_GPG_PRIVATE_KEY_PASSPHRASE')
+
+    // jFrog plugin must be declared for this line to work
+    configurations = ['archives']
+    // Package info for BinTray
+    pkg {
+        repo = 'maven'
+        name = 'android-valid'
+        userOrg = user
+        licenses = ['Apache-2.0']
+        vcsUrl = project.library_git_url
+        version {
+            name = project.library_version
+            desc = project.library_description
+            released  = new Date()
+            vcsTag = project.library_version
+            gpg {
+                sign = true
+                passphrase = privateKeyPassphrase
+            }
+        }
+    }
 }
