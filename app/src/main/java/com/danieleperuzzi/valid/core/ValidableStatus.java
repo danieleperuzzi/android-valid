@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.validator;
+package com.danieleperuzzi.valid.core;
 
-public interface ValidatorOptionsHolder {
-    ValidatorOptions get();
+/**
+ * Every time we run a validation through the {@link Validator}
+ * we can expect that any given {@link Validable} will have only
+ * one of these two statuses
+ */
+public enum ValidableStatus {
+    VALIDATED,
+    NOT_VALIDATED
 }

@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.validator;
-
-import com.danieleperuzzi.valid.constraint.Constraint;
-import com.danieleperuzzi.valid.constraint.impl.BaseConstraint;
+package com.danieleperuzzi.valid.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ValidatorOptions {
+/**
+ * Every {@link Validable} Object must match all the provided {@link Constraint}
+ * in order to be declared validated.
+ *
+ * <p>This class simply holds a list of priority ordered constraints
+ * that must be associated to a validable object.
+ * The order on which we evaluate all the constraints is specified
+ * in the constraint itself, we just order them so the {@link Validator}
+ * can process them one by one</p>
+ */
+public final class ValidatorOptions {
 
-    private List<Constraint> constraints = new ArrayList<>();
+    private List<Constraint<?, ?>> constraints = new ArrayList<>();
 
-    public List<Constraint> getConstraints() {
+    List<Constraint<?, ?>> getConstraints() {
         return constraints;
     }
 
@@ -35,7 +42,7 @@ public class ValidatorOptions {
     }
 
 
-    public static class Builder {
+    public final static class Builder {
 
         private ValidatorOptions instance;
 
@@ -43,13 +50,18 @@ public class ValidatorOptions {
             this.instance = new ValidatorOptions();
         }
 
-        public Builder addConstraint(BaseConstraint validator) {
-            instance.constraints.add(validator);
+        public Builder addConstraint(Constraint<?, ?> constraint) {
+            instance.constraints.add(constraint);
             return this;
         }
 
+
+        /**
+         * When we finally construct the ValidatorOptions Object we also
+         * order the {@link Constraint} by priority, from lower to higher
+         * @return
+         */
         public ValidatorOptions build() {
-            //must order constraints by priority, from lower to higher
             Collections.sort(instance.constraints);
             return instance;
         }

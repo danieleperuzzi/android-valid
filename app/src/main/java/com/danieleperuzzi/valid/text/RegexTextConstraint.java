@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.constraint.impl;
+package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.constraint.ConstraintErrorMap;
-import com.danieleperuzzi.valid.validator.Validable;
-import com.danieleperuzzi.valid.validator.ValidatorResult;
-import com.danieleperuzzi.valid.validator.ValidatorStatus;
+import com.danieleperuzzi.valid.core.Constraint;
+import com.danieleperuzzi.valid.core.ConstraintErrorMap;
+import com.danieleperuzzi.valid.core.ConstraintResult;
+import com.danieleperuzzi.valid.core.ValidableStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegexTextConstraint extends BaseConstraint<String, String> {
+public class RegexTextConstraint extends Constraint<String, String> {
 
     private final boolean shouldBrakeValidateChain = false;
 
@@ -35,31 +35,24 @@ public class RegexTextConstraint extends BaseConstraint<String, String> {
     }
 
     @Override
-    public Class<?> getValidableConcreteClassType(Validable<?> value) {
-        if (value.getValue() == null) {
-            return null;
-        }
-        return value.getValue().getClass();
-    }
-
-    @Override
-    public boolean shouldBreakValidateChain(String text) {
+    protected boolean shouldBreakValidationChain(String text) {
         return shouldBrakeValidateChain;
     }
 
     @Override
-    public ValidatorResult evaluate(String text) {
-        ValidatorResult result = new ValidatorResult();
+    protected ConstraintResult evaluate(String text) {
+        ValidableStatus status;
+        String error;
 
         if (!satisfyRegex(text)) {
-            result.status = ValidatorStatus.NOT_VALIDATED;
-            result.validatorError = getErrorMap().getErrorByKey("REGEX_NOT_SATISFIED");
+            status = ValidableStatus.NOT_VALIDATED;
+            error = getErrorMap().getErrorByKey("REGEX_NOT_SATISFIED");
         } else {
-            result.status = ValidatorStatus.VALIDATED;
-            result.validatorError = null;
+            status = ValidableStatus.VALIDATED;
+            error = null;
         }
 
-        return result;
+        return new ConstraintResult(status, error);
     }
 
     @Override

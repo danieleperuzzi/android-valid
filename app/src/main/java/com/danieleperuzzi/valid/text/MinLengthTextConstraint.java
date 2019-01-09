@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.constraint.impl;
+package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.constraint.ConstraintErrorMap;
-import com.danieleperuzzi.valid.validator.Validable;
-import com.danieleperuzzi.valid.validator.ValidatorResult;
-import com.danieleperuzzi.valid.validator.ValidatorStatus;
+import com.danieleperuzzi.valid.core.Constraint;
+import com.danieleperuzzi.valid.core.ConstraintErrorMap;
+import com.danieleperuzzi.valid.core.ConstraintResult;
+import com.danieleperuzzi.valid.core.ValidableStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MinLengthTextConstraint extends BaseConstraint<String, Integer> {
+public class MinLengthTextConstraint extends Constraint<String, Integer> {
 
     private final boolean shouldBrakeValidateChain = false;
 
@@ -33,43 +33,36 @@ public class MinLengthTextConstraint extends BaseConstraint<String, Integer> {
     }
 
     @Override
-    public Class<?> getValidableConcreteClassType(Validable<?> value) {
-        if (value.getValue() == null) {
-            return null;
-        }
-        return value.getValue().getClass();
-    }
-
-    @Override
-    public boolean shouldBreakValidateChain(String text) {
+    protected boolean shouldBreakValidationChain(String text) {
         return shouldBrakeValidateChain;
     }
 
     @Override
-    public ValidatorResult evaluate(String text) {
-        ValidatorResult result = new ValidatorResult();
+    protected ConstraintResult evaluate(String text) {
+        ValidableStatus status;
+        String error;
 
         if (text == null && getValidationConstraint() == 0) {
-            result.status = ValidatorStatus.VALIDATED;
-            result.validatorError = null;
-            return result;
+            status = ValidableStatus.VALIDATED;
+            error = null;
+            return new ConstraintResult(status, error);
         }
 
         if (text == null && getValidationConstraint() > 0) {
-            result.status = ValidatorStatus.NOT_VALIDATED;
-            result.validatorError = getErrorMap().getErrorByKey("MIN_LENGTH_NOT_REACHED");
-            return result;
+            status = ValidableStatus.NOT_VALIDATED;
+            error = getErrorMap().getErrorByKey("MIN_LENGTH_NOT_REACHED");
+            return new ConstraintResult(status, error);
         }
 
         if (text.length() < getValidationConstraint()) {
-            result.status = ValidatorStatus.NOT_VALIDATED;
-            result.validatorError = getErrorMap().getErrorByKey("MIN_LENGTH_NOT_REACHED");
+            status = ValidableStatus.NOT_VALIDATED;
+            error = getErrorMap().getErrorByKey("MIN_LENGTH_NOT_REACHED");
         } else {
-            result.status = ValidatorStatus.VALIDATED;
-            result.validatorError = null;
+            status = ValidableStatus.VALIDATED;
+            error = null;
         }
 
-        return result;
+        return new ConstraintResult(status, error);
     }
 
     @Override

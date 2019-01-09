@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.validator.impl;
+package com.danieleperuzzi.valid.util;
 
-import com.danieleperuzzi.valid.validator.ValidatorOptions;
-import com.danieleperuzzi.valid.validator.ValidatorOptionsFactory;
-import com.danieleperuzzi.valid.validator.ValidatorOptionsHolder;
+import com.danieleperuzzi.valid.core.ValidatorOptions;
 
 import java.util.Map;
 
-public abstract class BaseValidatorOptionsFactory implements ValidatorOptionsFactory {
+public abstract class ValidatorOptionsFactory {
 
-    public abstract Map<String, ValidatorOptionsHolder> getValidatorOptionsMap();
+    protected abstract Map<String, ValidatorOptionsHolder> getValidatorOptionsMap();
 
-    @Override
     public ValidatorOptions getOptionsByTag(String tag) {
         Map<String, ValidatorOptionsHolder> validatorOptionsMap = getValidatorOptionsMap();
 

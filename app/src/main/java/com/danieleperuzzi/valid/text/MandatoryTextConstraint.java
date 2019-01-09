@@ -14,32 +14,24 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.constraint.impl;
+package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.constraint.ConstraintErrorMap;
-import com.danieleperuzzi.valid.validator.Validable;
-import com.danieleperuzzi.valid.validator.ValidatorResult;
-import com.danieleperuzzi.valid.validator.ValidatorStatus;
+import com.danieleperuzzi.valid.core.Constraint;
+import com.danieleperuzzi.valid.core.ConstraintErrorMap;
+import com.danieleperuzzi.valid.core.ConstraintResult;
+import com.danieleperuzzi.valid.core.ValidableStatus;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MandatoryTextConstraint extends BaseConstraint<String, Boolean> {
+public class MandatoryTextConstraint extends Constraint<String, Boolean> {
 
     public MandatoryTextConstraint(Boolean mandatory, int evaluationPriority, ConstraintErrorMap errorMap) throws Exception {
         super(mandatory, evaluationPriority, errorMap);
     }
 
     @Override
-    public Class<?> getValidableConcreteClassType(Validable<?> value) {
-        if (value.getValue() == null) {
-            return null;
-        }
-        return value.getValue().getClass();
-    }
-
-    @Override
-    public boolean shouldBreakValidateChain(String text) {
+    protected boolean shouldBreakValidationChain(String text) {
         if (text == null || text.isEmpty()) {
             return true;
         }
@@ -47,18 +39,19 @@ public class MandatoryTextConstraint extends BaseConstraint<String, Boolean> {
     }
 
     @Override
-    public ValidatorResult evaluate(String text) {
-        ValidatorResult result = new ValidatorResult();
+    protected ConstraintResult evaluate(String text) {
+        ValidableStatus status;
+        String error;
 
         if ((text == null || text.isEmpty()) && getValidationConstraint()) {
-            result.status = ValidatorStatus.NOT_VALIDATED;
-            result.validatorError = getErrorMap().getErrorByKey("MANDATORY_FIELD");
+            status = ValidableStatus.NOT_VALIDATED;
+            error = getErrorMap().getErrorByKey("MANDATORY_FIELD");
         } else {
-            result.status = ValidatorStatus.VALIDATED;
-            result.validatorError = null;
+            status = ValidableStatus.VALIDATED;
+            error = null;
         }
 
-        return result;
+        return new ConstraintResult(status, error);
     }
 
     @Override

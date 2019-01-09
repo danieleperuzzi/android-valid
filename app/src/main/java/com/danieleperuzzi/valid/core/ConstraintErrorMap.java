@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.constraint;
+package com.danieleperuzzi.valid.core;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ConstraintErrorMap {
+/**
+ * Helper Class that hold the error message map in the form of a String key
+ * and a String Message.
+ *
+ * <p>It is intended tu use in conjunction with the {@link Constraint} Class
+ * to ensure that when you instantiates it you will be easily able to pass
+ * a custom error map with all the messages localized in your language or simply
+ * provide whatever you want</p>
+ *
+ * <p>This Class is created upon the assumption that every {@link Constraint}
+ * may return more than one error message depending on which case you may encounter</p>
+ */
+public final class ConstraintErrorMap {
 
     private Map<String, String> errorMap = new HashMap<>();
 
-    public Map<String, String> getErrorMap() {
+    Map<String, String> getErrorMap() {
         return errorMap;
     }
 
@@ -34,7 +46,7 @@ public class ConstraintErrorMap {
         return errorMap.get(key);
     }
 
-    public static class Builder {
+    public final static class Builder {
 
         private ConstraintErrorMap instance;
 

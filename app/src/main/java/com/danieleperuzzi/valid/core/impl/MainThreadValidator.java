@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.validator.impl;
+package com.danieleperuzzi.valid.core.impl;
 
-import com.danieleperuzzi.valid.validator.ValidatorOptions;
-import com.danieleperuzzi.valid.validator.ValidatorOptionsHolder;
+import android.support.annotation.MainThread;
+import android.support.annotation.Nullable;
 
-public abstract class CachedValidatorOptions implements ValidatorOptionsHolder {
+import com.danieleperuzzi.valid.core.BaseValidator;
+import com.danieleperuzzi.valid.core.Validable;
+import com.danieleperuzzi.valid.core.ValidatorObserver;
+import com.danieleperuzzi.valid.core.ValidatorOptions;
 
-    public abstract ValidatorOptions getCachedValidatorOptions();
-
-    public abstract ValidatorOptions getNewValidatorOptions();
+public class MainThreadValidator extends BaseValidator {
 
     @Override
-    public ValidatorOptions get() {
-        ValidatorOptions validatorOptions = getCachedValidatorOptions();
-
-        if (validatorOptions != null) {
-            return validatorOptions;
-        }
-
-        return getNewValidatorOptions();
+    @MainThread
+    public void startValidation(Validable<?> value, ValidatorOptions options, @Nullable ValidatorObserver observer, Callback callback) {
+        doValidation(value, options, observer, callback);
     }
 }

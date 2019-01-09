@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.validator.impl;
+package com.danieleperuzzi.valid.util;
 
-import android.support.annotation.MainThread;
+import com.danieleperuzzi.valid.core.ValidatorOptions;
 
-import com.danieleperuzzi.valid.validator.Validable;
-import com.danieleperuzzi.valid.validator.ValidatorOptions;
-
-public class MainThreadValidator extends BaseValidator {
-
-    @Override
-    @MainThread
-    public void startValidation(Validable<?> value, ValidatorOptions options, Callback callback) {
-        doValidation(value, options, callback);
-    }
+public interface ValidatorOptionsHolder {
+    ValidatorOptions get();
 }

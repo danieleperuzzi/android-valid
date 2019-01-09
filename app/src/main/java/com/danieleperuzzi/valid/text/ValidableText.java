@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.validator.impl;
+package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.validator.Validable;
+import android.support.annotation.Nullable;
+
+import com.danieleperuzzi.valid.core.Validable;
 
 public class ValidableText implements Validable<String> {
 
     private String text;
+    private String tag;
 
     @Override
     public String getValue() {
@@ -28,7 +31,13 @@ public class ValidableText implements Validable<String> {
     }
 
     @Override
-    public void setValue(String text) {
+    public String getTag() {
+        return tag;
+    }
+
+    @Override
+    public void setValue(String text, @Nullable String tag) {
         this.text = text;
+        this.tag = tag;
     }
 }

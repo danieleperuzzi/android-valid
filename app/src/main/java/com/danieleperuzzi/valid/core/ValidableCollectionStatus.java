@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.validator;
+package com.danieleperuzzi.valid.core;
 
-import java.util.Map;
-
-public interface ValidatorResultObserverCallback {
-    void status(Map<Validable<?>, ValidatorResult> validableResults, ValidatorResultObserverStatus status);
+/**
+ * Every time we want to know the global status of a collection of
+ * {@link Validable} we can expect only these two outputs: if at least one
+ * of them does not pass the validation then the entire process fails.
+ */
+public enum ValidableCollectionStatus {
+    ALL_VALIDATED,
+    AT_LEAST_ONE_NOT_VALIDATED
 }

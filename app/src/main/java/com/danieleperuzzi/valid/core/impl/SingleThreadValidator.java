@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.validator.impl;
+package com.danieleperuzzi.valid.core.impl;
 
 import android.support.annotation.MainThread;
+import android.support.annotation.Nullable;
 
-import com.danieleperuzzi.valid.validator.Validable;
-import com.danieleperuzzi.valid.validator.ValidatorOptions;
+import com.danieleperuzzi.valid.core.BaseValidator;
+import com.danieleperuzzi.valid.core.Validable;
+import com.danieleperuzzi.valid.core.ValidatorObserver;
+import com.danieleperuzzi.valid.core.ValidatorOptions;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class PoolThreadValidator extends BaseValidator {
+public class SingleThreadValidator extends BaseValidator {
 
     private Executor executor;
 
-    public PoolThreadValidator() {
-        int cpuNum = Runtime.getRuntime().availableProcessors();
-        executor = Executors.newFixedThreadPool(cpuNum);
+    public SingleThreadValidator() {
+        executor = Executors.newSingleThreadExecutor();
     }
 
     @Override
     @MainThread
-    public void startValidation(Validable<?> value, ValidatorOptions options, Callback callback) {
+    public void startValidation(Validable<?> value, ValidatorOptions options, @Nullable ValidatorObserver observer, Callback callback) {
         Runnable runnable = () -> {
-            doValidation(value, options, callback);
+          doValidation(value, options, observer, callback);
         };
 
         executor.execute(runnable);

@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.validator;
+package com.danieleperuzzi.valid.util.impl;
 
-import android.support.annotation.Nullable;
+import com.danieleperuzzi.valid.core.ValidatorOptions;
+import com.danieleperuzzi.valid.util.ValidatorOptionsHolder;
 
-public class ValidatorResult {
+public abstract class CachedValidatorOptions implements ValidatorOptionsHolder {
 
-    public ValidatorStatus status;
+    protected abstract ValidatorOptions getCachedValidatorOptions();
 
-    @Nullable
-    public String validatorError;
+    protected abstract ValidatorOptions getNewValidatorOptions();
 
-    public ValidatorResult() {
+    @Override
+    public ValidatorOptions get() {
+        ValidatorOptions validatorOptions = getCachedValidatorOptions();
+
+        if (validatorOptions != null) {
+            return validatorOptions;
+        }
+
+        return getNewValidatorOptions();
     }
 }
