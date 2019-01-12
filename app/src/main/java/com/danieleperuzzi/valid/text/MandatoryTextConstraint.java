@@ -17,25 +17,18 @@
 package com.danieleperuzzi.valid.text;
 
 import com.danieleperuzzi.valid.core.Constraint;
-import com.danieleperuzzi.valid.core.ConstraintErrorMap;
 import com.danieleperuzzi.valid.core.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MandatoryTextConstraint extends Constraint<String, Boolean> {
 
-    public MandatoryTextConstraint(Boolean mandatory, int evaluationPriority, ConstraintErrorMap errorMap) throws Exception {
-        super(mandatory, evaluationPriority, errorMap);
+    public MandatoryTextConstraint(Boolean mandatory, int evaluationPriority, String error) {
+        super(mandatory, evaluationPriority, error);
     }
 
     @Override
     protected boolean shouldBreakValidationChain(String text) {
-        if (text == null || text.isEmpty()) {
-            return true;
-        }
-        return false;
+        return text == null || text.isEmpty();
     }
 
     @Override
@@ -43,22 +36,14 @@ public class MandatoryTextConstraint extends Constraint<String, Boolean> {
         ValidableStatus status;
         String error;
 
-        if ((text == null || text.isEmpty()) && getValidationConstraint()) {
+        if ((text == null || text.isEmpty()) && getConstraint()) {
             status = ValidableStatus.NOT_VALIDATED;
-            error = getErrorMap().getErrorByKey("MANDATORY_FIELD");
+            error = getError();
         } else {
             status = ValidableStatus.VALIDATED;
             error = null;
         }
 
         return new ConstraintResult(status, error);
-    }
-
-    @Override
-    protected List<String> getErrorKeyList() {
-        List<String> errorKeyList = new ArrayList<>();
-        errorKeyList.add("MANDATORY_FIELD");
-
-        return errorKeyList;
     }
 }

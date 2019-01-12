@@ -17,24 +17,18 @@
 package com.danieleperuzzi.valid.text;
 
 import com.danieleperuzzi.valid.core.Constraint;
-import com.danieleperuzzi.valid.core.ConstraintErrorMap;
 import com.danieleperuzzi.valid.core.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MaxLengthTextConstraint extends Constraint<String, Integer> {
 
-    private final boolean shouldBrakeValidateChain = false;
-
-    public MaxLengthTextConstraint(Integer maxLength, int evaluationPriority, ConstraintErrorMap errorMap) throws Exception {
-        super(maxLength, evaluationPriority, errorMap);
+    public MaxLengthTextConstraint(Integer maxLength, int evaluationPriority, String error) {
+        super(maxLength, evaluationPriority, error);
     }
 
     @Override
     protected boolean shouldBreakValidationChain(String text) {
-        return shouldBrakeValidateChain;
+        return false;
     }
 
     @Override
@@ -48,22 +42,14 @@ public class MaxLengthTextConstraint extends Constraint<String, Integer> {
             return new ConstraintResult(status, error);
         }
 
-        if ((text.length() > getValidationConstraint()) && (getValidationConstraint() != -1)) {
+        if ((text.length() > getConstraint()) && (getConstraint() != -1)) {
             status = ValidableStatus.NOT_VALIDATED;
-            error = getErrorMap().getErrorByKey("MAX_LENGTH_EXCEEDED");
+            error = getError();
         } else {
             status = ValidableStatus.VALIDATED;
             error = null;
         }
 
         return new ConstraintResult(status, error);
-    }
-
-    @Override
-    protected List<String> getErrorKeyList() {
-        List<String> errorKeyList = new ArrayList<>();
-        errorKeyList.add("MAX_LENGTH_EXCEEDED");
-
-        return errorKeyList;
     }
 }

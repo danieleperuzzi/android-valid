@@ -17,24 +17,18 @@
 package com.danieleperuzzi.valid.text;
 
 import com.danieleperuzzi.valid.core.Constraint;
-import com.danieleperuzzi.valid.core.ConstraintErrorMap;
 import com.danieleperuzzi.valid.core.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MinLengthTextConstraint extends Constraint<String, Integer> {
 
-    private final boolean shouldBrakeValidateChain = false;
-
-    public MinLengthTextConstraint(Integer minLength, int evaluationPriority, ConstraintErrorMap errorMap) throws Exception {
-        super(minLength, evaluationPriority, errorMap);
+    public MinLengthTextConstraint(Integer minLength, int evaluationPriority, String error) {
+        super(minLength, evaluationPriority, error);
     }
 
     @Override
     protected boolean shouldBreakValidationChain(String text) {
-        return shouldBrakeValidateChain;
+        return false;
     }
 
     @Override
@@ -42,34 +36,26 @@ public class MinLengthTextConstraint extends Constraint<String, Integer> {
         ValidableStatus status;
         String error;
 
-        if (text == null && getValidationConstraint() == 0) {
+        if (text == null && getConstraint() == 0) {
             status = ValidableStatus.VALIDATED;
             error = null;
             return new ConstraintResult(status, error);
         }
 
-        if (text == null && getValidationConstraint() > 0) {
+        if (text == null && getConstraint() > 0) {
             status = ValidableStatus.NOT_VALIDATED;
-            error = getErrorMap().getErrorByKey("MIN_LENGTH_NOT_REACHED");
+            error = getError();
             return new ConstraintResult(status, error);
         }
 
-        if (text.length() < getValidationConstraint()) {
+        if (text.length() < getConstraint()) {
             status = ValidableStatus.NOT_VALIDATED;
-            error = getErrorMap().getErrorByKey("MIN_LENGTH_NOT_REACHED");
+            error = getError();
         } else {
             status = ValidableStatus.VALIDATED;
             error = null;
         }
 
         return new ConstraintResult(status, error);
-    }
-
-    @Override
-    protected List<String> getErrorKeyList() {
-        List<String> errorKeyList = new ArrayList<>();
-        errorKeyList.add("MIN_LENGTH_NOT_REACHED");
-
-        return errorKeyList;
     }
 }

@@ -17,26 +17,21 @@
 package com.danieleperuzzi.valid.text;
 
 import com.danieleperuzzi.valid.core.Constraint;
-import com.danieleperuzzi.valid.core.ConstraintErrorMap;
 import com.danieleperuzzi.valid.core.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexTextConstraint extends Constraint<String, String> {
 
-    private final boolean shouldBrakeValidateChain = false;
-
-    public RegexTextConstraint(String regex, int evaluationPriority, ConstraintErrorMap errorMap) throws Exception {
-        super(regex, evaluationPriority, errorMap);
+    public RegexTextConstraint(String regex, int evaluationPriority, String error) {
+        super(regex, evaluationPriority, error);
     }
 
     @Override
     protected boolean shouldBreakValidationChain(String text) {
-        return shouldBrakeValidateChain;
+        return false;
     }
 
     @Override
@@ -46,7 +41,7 @@ public class RegexTextConstraint extends Constraint<String, String> {
 
         if (!satisfyRegex(text)) {
             status = ValidableStatus.NOT_VALIDATED;
-            error = getErrorMap().getErrorByKey("REGEX_NOT_SATISFIED");
+            error = getError();
         } else {
             status = ValidableStatus.VALIDATED;
             error = null;
@@ -55,24 +50,16 @@ public class RegexTextConstraint extends Constraint<String, String> {
         return new ConstraintResult(status, error);
     }
 
-    @Override
-    protected List<String> getErrorKeyList() {
-        List<String> errorKeyList = new ArrayList<>();
-        errorKeyList.add("REGEX_NOT_SATISFIED");
-
-        return errorKeyList;
-    }
-
     private boolean satisfyRegex(String text) {
         if (text == null) {
             return false;
         }
 
-        if (getValidationConstraint() == null) {
+        if (getConstraint() == null) {
             return true;
         }
 
-        Pattern pattern = Pattern.compile(getValidationConstraint());
+        Pattern pattern = Pattern.compile(getConstraint());
         Matcher matcher = pattern.matcher(text);
         return matcher.matches();
     }

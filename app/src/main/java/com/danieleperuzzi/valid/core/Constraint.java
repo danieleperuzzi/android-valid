@@ -18,21 +18,17 @@ package com.danieleperuzzi.valid.core;
 
 import android.support.annotation.NonNull;
 
-import java.util.List;
 import java.util.Map;
 
 /**
  * This Class exposes methods that are used by the Validator to perform essential
- * operation on every constraint given to it
+ * operation on every constraint given to it.
  *
- * <p>You must extend this Class and implement few method to be fully operative.</p>
+ * <p>You must extend this Class and implement few methods to be fully operative.</p>
  *
  * <p>The Class expects that you are going to validate a {@link Validable} Object type
  * that the concrete implementation is able to process, otherwise it throws a
  * ClassCastException at runtime</p>
- *
- * <p>Constraint assures that you provide all the error messages that the concrete
- * implementation may require</p>
  *
  * @param <V>   the {@link Validable} type
  * @param <C>   the Object that holds information against which the value is going
@@ -40,7 +36,7 @@ import java.util.Map;
  */
 public abstract class Constraint<V, C> implements Comparable<Constraint> {
 
-    private C validationConstraint;
+    private C constraint;
 
     /**
      * Every Constraint declares its priority used by the ValidatorOptions
@@ -52,48 +48,52 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      */
     private int evaluationPriority;
 
-    private ConstraintErrorMap errorMap;
+    private String error;
+    private Map<String, String> errorMap;
 
-    protected final C getValidationConstraint() {
-        return validationConstraint;
+    protected final C getConstraint() {
+        return constraint;
     }
 
-    protected final ConstraintErrorMap getErrorMap() {
+    protected final String getError() {
+        return error;
+    }
+
+    protected final Map<String, String> getErrorMap() {
         return errorMap;
     }
 
     /**
-     * Every time we extend this class we must call the constructor using super
-     *
-     * @param validationConstraint  the Object that holds information against
+     * @param constraint            the Object that holds information against
      *                              which the value is going to be validated
      * @param evaluationPriority    the priority of this Constraint
-     * @param errorMap              the error map that this Constraint can use
-     * @throws Exception            if you don't provide a map for all the error
-     *                              messages that this Constraint can handle an
-     *                              Exception is thrown
+     * @param error                 the error thrown if evaluation fails
      */
-    protected Constraint(C validationConstraint, int evaluationPriority, ConstraintErrorMap errorMap) throws Exception {
-        this.validationConstraint = validationConstraint;
-        this.evaluationPriority = evaluationPriority;
-        this.errorMap = errorMap;
+    protected Constraint(C constraint, int evaluationPriority, String error) {
+        this(constraint, evaluationPriority);
 
-        init();
+        this.error = error;
     }
 
-    private void init() throws Exception {
-        List<String> errorKeyList = getErrorKeyList();
-        int count = 0;
+    /**
+     * @param constraint            the Object that holds information against
+     *                              which the value is going to be validated
+     * @param evaluationPriority    the priority of this Constraint
+     * @param errorMap              a map is used if this constraint can throw
+     *                              multiple errors
+     */
+    protected Constraint(C constraint, int evaluationPriority, Map<String, String> errorMap) {
+        this(constraint, evaluationPriority);
 
-        for (Map.Entry<String, String> entry : errorMap.getErrorMap().entrySet()) {
-            if (errorKeyList.contains(entry.getKey()) && entry.getValue() != null) {
-                count++;
-            }
-        }
+        this.errorMap = errorMap;
+    }
 
-        if (errorKeyList.size() != count) {
-            throw new Exception("Must implement all the error messages");
-        }
+    private Constraint(C constraint, int evaluationPriority) {
+        this.constraint = constraint;
+        this.evaluationPriority = evaluationPriority;
+    }
+
+    private Constraint() {
     }
 
     /**
@@ -102,17 +102,17 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      * concrete {@link Validable} type is returned
      *
      * @param value                 the {@link Validable} Object to be inspected
-     * @return                      the concrete class held by the {@link Validable} Object
+     * @return                      the concrete Object held by the {@link Validable}
      * @throws ClassCastException   the exception thrown if the type this Constraint
      *                              can validate and the provided {@link Validable} Object type
      *                              does not match
      */
-    private V checkAndAssignValueType(Validable<?> value) throws ClassCastException {
+    private V tryToGetConcreteValidableValue(Validable<?> value) throws ClassCastException {
         try {
             return (V) value.getValue();
 
         } catch (ClassCastException e) {
-            throw new ClassCastException("This Constraint cannot valid " + value.getValue().getClass().getSimpleName() +
+            throw new ClassCastException("This Constraint cannot valid a " + value.getValue().getClass().getSimpleName() +
                     " Object");
         }
     }
@@ -131,7 +131,7 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      *                              and an optional error message
      */
      final ConstraintResult evaluate(Validable<?> value) {
-        V concreteValue = checkAndAssignValueType(value);
+        V concreteValue = tryToGetConcreteValidableValue(value);
         return evaluate(concreteValue);
     }
 
@@ -162,7 +162,7 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      * @return      tell the Validator if it should go on or stop
      */
      final boolean shouldBreakValidationChain(Validable<?> value) {
-        V concreteValue = checkAndAssignValueType(value);
+        V concreteValue = tryToGetConcreteValidableValue(value);
         return shouldBreakValidationChain(concreteValue);
     }
 
@@ -180,15 +180,6 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      * @return      tell the Validator if it should go on or stop
      */
     protected abstract boolean shouldBreakValidationChain(V value);
-
-    /**
-     * Inside this method we declare the list of errors that the concrete
-     * implementation of this Constraint may produce in order to be sure
-     * that when we instantiate it we pass all the error mappings
-     *
-     * @return  the key list of error messages
-     */
-    protected abstract List<String> getErrorKeyList();
 
     /**
      * The logic used to compare the constraint
