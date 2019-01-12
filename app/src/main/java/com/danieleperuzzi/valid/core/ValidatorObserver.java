@@ -34,6 +34,21 @@ public final class ValidatorObserver {
     private int validatedValidables = 0;
     private int notValidatedValidables = 0;
 
+    /**
+     * In order to observe the global status of a {@link Validable} collection every time
+     * one of them is being validated we must know the initial {@link ValidableStatus} of
+     * each one.
+     *
+     * <p>This is mandatory because is possible that, in a set of three validables, we
+     * only check the first and never the other two.</p>
+     *
+     * <p>To achieve this the {@link Helper} Class is used, it performs a bulk validation
+     * on the entire collection and give us back the initial result.</p>
+     *
+     * @param validables    the map used to track the set of {@link Validable} to observe
+     *                      and to initialize the {@link Helper} Object
+     * @param callback      {@link CollectionValidator.Callback} used to post the result
+     */
     public ValidatorObserver(Map<Validable<?>, ValidatorOptions> validables, CollectionValidator.Callback callback) {
         Helper helper = new Helper(validables);
 
@@ -43,6 +58,9 @@ public final class ValidatorObserver {
         init();
     }
 
+    /**
+     * Just used to count the initial statuses of the {@link Validable} collection
+     */
     private void init() {
         totalValidables = validableResults.size();
 
@@ -57,6 +75,15 @@ public final class ValidatorObserver {
         }
     }
 
+    /**
+     * Update the global status of the collection only if the new status differs from
+     * the previous and then put the new status in the {@link #validableResults} map.
+     *
+     * @param value             the {@link Validable} that has been validated
+     * @param currentResult     the result given by the {@link Validator}
+     * @param previousResult    the result held in the {@link #validableResults} map before
+     *                          it may be updated
+     */
     private void update(Validable<?> value, ValidatorResult currentResult, ValidatorResult previousResult) {
         if (!currentResult.equals(previousResult)) {
             if (currentResult.status == ValidableStatus.VALIDATED) {
@@ -71,6 +98,10 @@ public final class ValidatorObserver {
         }
     }
 
+    /**
+     * Invoke the {@link #callback} with the global {@link Validable}
+     * collection status updated.
+     */
     private void triggerListener() {
         if (callback != null) {
             ValidableCollectionStatus actualStatus;
@@ -85,6 +116,16 @@ public final class ValidatorObserver {
         }
     }
 
+    /**
+     * Every time the {@link Validator} is instructed to post result of a validation
+     * to this Class it calls this method.
+     *
+     * <p>It does simple check to ensure that the {@link Validable} that has been
+     * validated is one of them that should be observed</p>
+     *
+     * @param value     the {@link Validable} that has been validated
+     * @param result    the result of the validation
+     */
     void notify(Validable<?> value, ValidatorResult result) {
         if (validableResults != null && validableResults.containsKey(value)) {
             update(value, result, validableResults.get(value));
@@ -94,7 +135,8 @@ public final class ValidatorObserver {
 
     /**
      * Helper Class used to build {@link ValidatorObserver} with an initial
-     * status that reflects the real status of the observed {@link Validable}.
+     * status that reflects the real status of the observed {@link Validable}
+     * collection.
      */
     private static class Helper {
 
