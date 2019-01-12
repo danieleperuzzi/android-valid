@@ -23,6 +23,8 @@ import com.danieleperuzzi.valid.core.Validable;
 public class ValidableText implements Validable<String> {
 
     private String text;
+
+    @Nullable
     private String tag;
 
     @Override
@@ -39,5 +41,13 @@ public class ValidableText implements Validable<String> {
     public void setValue(String text, @Nullable String tag) {
         this.text = text;
         this.tag = tag;
+    }
+
+    public ValidableText(String text, @Nullable String tag) {
+        this.text = text;
+        this.tag = tag;
+    }
+
+    public ValidableText() {
     }
 }
