@@ -40,10 +40,10 @@ public class RegexTextConstraint extends Constraint<String, String> {
         String error;
 
         if (!satisfyRegex(text)) {
-            status = ValidableStatus.NOT_VALIDATED;
+            status = ValidableStatus.NOT_VALID;
             error = getError();
         } else {
-            status = ValidableStatus.VALIDATED;
+            status = ValidableStatus.VALID;
             error = null;
         }
 

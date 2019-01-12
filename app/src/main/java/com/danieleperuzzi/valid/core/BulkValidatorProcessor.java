@@ -76,7 +76,7 @@ public final class BulkValidatorProcessor implements Validator.Callback {
      */
     @MainThread
     public void status(Validable<?> value, ValidatorResult result) {
-        if (result.status == ValidableStatus.VALIDATED) {
+        if (result.status == ValidableStatus.VALID) {
             validatedValidable++;
         } else {
             notValidatedValidable++;
@@ -86,12 +86,12 @@ public final class BulkValidatorProcessor implements Validator.Callback {
 
         if ((validatedValidable + notValidatedValidable) == validableInstances) {
             if (validatedValidable == validableInstances) {
-                triggerListener(validableResults, ValidableCollectionStatus.ALL_VALIDATED);
+                triggerListener(validableResults, ValidableCollectionStatus.ALL_VALID);
                 return;
             }
 
             if (validatedValidable < validableInstances) {
-                triggerListener(validableResults, ValidableCollectionStatus.AT_LEAST_ONE_NOT_VALIDATED);
+                triggerListener(validableResults, ValidableCollectionStatus.AT_LEAST_ONE_NOT_VALID);
                 return;
             }
         }

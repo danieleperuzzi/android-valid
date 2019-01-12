@@ -22,6 +22,6 @@ package com.danieleperuzzi.valid.core;
  * of them does not pass the validation then the entire process fails.
  */
 public enum ValidableCollectionStatus {
-    ALL_VALIDATED,
-    AT_LEAST_ONE_NOT_VALIDATED
+    ALL_VALID,
+    AT_LEAST_ONE_NOT_VALID
 }

@@ -119,7 +119,7 @@ public abstract class BaseValidator implements Validator {
         for (Constraint<?, ?> constraint : constraints) {
             constraintResult = constraint.evaluate(value);
 
-            if (constraintResult.status == ValidableStatus.NOT_VALIDATED || (constraintResult.status == ValidableStatus.VALIDATED && constraint.shouldBreakValidationChain(value))) {
+            if (constraintResult.status == ValidableStatus.NOT_VALID || (constraintResult.status == ValidableStatus.VALID && constraint.shouldBreakValidationChain(value))) {
                 postResult(value, new ValidatorResult(constraintResult), observer, callback);
                 return;
             }

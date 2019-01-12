@@ -37,10 +37,10 @@ public class MandatoryTextConstraint extends Constraint<String, Boolean> {
         String error;
 
         if ((text == null || text.isEmpty()) && getConstraint()) {
-            status = ValidableStatus.NOT_VALIDATED;
+            status = ValidableStatus.NOT_VALID;
             error = getError();
         } else {
-            status = ValidableStatus.VALIDATED;
+            status = ValidableStatus.VALID;
             error = null;
         }
 

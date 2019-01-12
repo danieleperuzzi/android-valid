@@ -22,6 +22,6 @@ package com.danieleperuzzi.valid.core;
  * one of these two statuses
  */
 public enum ValidableStatus {
-    VALIDATED,
-    NOT_VALIDATED
+    VALID,
+    NOT_VALID
 }

@@ -37,22 +37,22 @@ public class MinLengthTextConstraint extends Constraint<String, Integer> {
         String error;
 
         if (text == null && getConstraint() == 0) {
-            status = ValidableStatus.VALIDATED;
+            status = ValidableStatus.VALID;
             error = null;
             return new ConstraintResult(status, error);
         }
 
         if (text == null && getConstraint() > 0) {
-            status = ValidableStatus.NOT_VALIDATED;
+            status = ValidableStatus.NOT_VALID;
             error = getError();
             return new ConstraintResult(status, error);
         }
 
         if (text.length() < getConstraint()) {
-            status = ValidableStatus.NOT_VALIDATED;
+            status = ValidableStatus.NOT_VALID;
             error = getError();
         } else {
-            status = ValidableStatus.VALIDATED;
+            status = ValidableStatus.VALID;
             error = null;
         }
 

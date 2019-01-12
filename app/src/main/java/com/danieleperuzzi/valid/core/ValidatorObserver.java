@@ -67,7 +67,7 @@ public final class ValidatorObserver {
         for (Map.Entry<Validable<?>, ValidatorResult> entry : validableResults.entrySet()) {
             ValidatorResult initialResult = entry.getValue();
 
-            if (initialResult.status == ValidableStatus.VALIDATED) {
+            if (initialResult.status == ValidableStatus.VALID) {
                 validatedValidables++;
             } else {
                 notValidatedValidables++;
@@ -86,7 +86,7 @@ public final class ValidatorObserver {
      */
     private void update(Validable<?> value, ValidatorResult currentResult, ValidatorResult previousResult) {
         if (!currentResult.equals(previousResult)) {
-            if (currentResult.status == ValidableStatus.VALIDATED) {
+            if (currentResult.status == ValidableStatus.VALID) {
                 validatedValidables++;
                 notValidatedValidables--;
             } else {
@@ -107,9 +107,9 @@ public final class ValidatorObserver {
             ValidableCollectionStatus actualStatus;
 
             if (validatedValidables < totalValidables) {
-                actualStatus = ValidableCollectionStatus.AT_LEAST_ONE_NOT_VALIDATED;
+                actualStatus = ValidableCollectionStatus.AT_LEAST_ONE_NOT_VALID;
             } else {
-                actualStatus = ValidableCollectionStatus.ALL_VALIDATED;
+                actualStatus = ValidableCollectionStatus.ALL_VALID;
             }
 
             callback.status(validableResults, actualStatus);

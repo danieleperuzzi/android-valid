@@ -37,7 +37,7 @@ public final class ConstraintResult {
     public ConstraintResult(ValidableStatus status, @Nullable String constraintError) {
         this.status = status;
 
-        if (status == ValidableStatus.NOT_VALIDATED) {
+        if (status == ValidableStatus.NOT_VALID) {
             this.constraintError = constraintError;
         } else {
             this.constraintError = null;
