@@ -20,21 +20,21 @@ import com.danieleperuzzi.valid.core.ValidatorOptions;
 
 import java.util.Map;
 
-public abstract class ValidatorOptionsFactory {
+/**
+ * Useful to instantiate once all the {@link ValidatorOptions} of a collection
+ * of validables and then retrieve them when needed.
+ */
+public class ValidatorOptionsFactory {
 
-    protected abstract Map<String, ValidatorOptionsHolder> getValidatorOptionsMap();
+    private Map<String, ValidatorOptions> validatorOptionsMap;
+
+    public ValidatorOptionsFactory(Map<String, ValidatorOptions> validatorOptionsMap) {
+        this.validatorOptionsMap = validatorOptionsMap;
+    }
 
     public ValidatorOptions getOptionsByTag(String tag) {
-        Map<String, ValidatorOptionsHolder> validatorOptionsMap = getValidatorOptionsMap();
-
-        if (validatorOptionsMap == null) {
-            return null;
-        }
-
-        for (Map.Entry<String, ValidatorOptionsHolder> validatorOptionsEntry : validatorOptionsMap.entrySet()) {
-            if (validatorOptionsEntry.getKey().equals(tag)) {
-                return validatorOptionsEntry.getValue().get();
-            }
+        if (validatorOptionsMap != null) {
+            return validatorOptionsMap.get(tag);
         }
 
         return null;
