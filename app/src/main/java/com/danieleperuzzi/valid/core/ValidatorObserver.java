@@ -121,15 +121,18 @@ public final class ValidatorObserver {
      * to this Class it calls this method.
      *
      * <p>It does simple check to ensure that the {@link Validable} that has been
-     * validated is one of them that should be observed</p>
+     * validated is one of them that should be observed and if it does then
+     * update the global status in atomic way</p>
      *
      * @param value     the {@link Validable} that has been validated
      * @param result    the result of the validation
      */
     void notify(Validable<?> value, ValidatorResult result) {
         if (validableResults != null && validableResults.containsKey(value)) {
-            update(value, result, validableResults.get(value));
-            triggerListener();
+            synchronized (this) {
+                update(value, result, validableResults.get(value));
+                triggerListener();
+            }
         }
     }
 
