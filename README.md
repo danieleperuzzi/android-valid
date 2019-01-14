@@ -106,7 +106,7 @@ Every constraint takes three parameters:
 to pass a map if multiple errors are thrown
 
 In this case we are telling to the validator that the string should first not
-be empty and then its minimum length should be 7 characters.
+be empty and then its minimum length should be 6 characters.
 
 When building the ValidatorOptions then constraint are automatically ordered.
 
