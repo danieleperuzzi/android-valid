@@ -30,7 +30,7 @@ public class RegexTextConstraint extends Constraint<String, String> {
     }
 
     @Override
-    protected boolean shouldBreakValidationChain(String text) {
+    protected boolean shouldStopValidation(String text) {
         return false;
     }
 

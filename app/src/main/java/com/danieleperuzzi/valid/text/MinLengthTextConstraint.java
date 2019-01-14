@@ -27,7 +27,7 @@ public class MinLengthTextConstraint extends Constraint<String, Integer> {
     }
 
     @Override
-    protected boolean shouldBreakValidationChain(String text) {
+    protected boolean shouldStopValidation(String text) {
         return false;
     }
 

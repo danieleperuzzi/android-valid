@@ -161,9 +161,9 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      *              we need it to take decision about the validation process
      * @return      tell the Validator if it should go on or stop
      */
-     final boolean shouldBreakValidationChain(Validable<?> value) {
+     final boolean shouldStopValidation(Validable<?> value) {
         V concreteValue = tryToGetConcreteValidableValue(value);
-        return shouldBreakValidationChain(concreteValue);
+        return shouldStopValidation(concreteValue);
     }
 
     /**
@@ -179,7 +179,7 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      *              to take decision about the validation process
      * @return      tell the Validator if it should go on or stop
      */
-    protected abstract boolean shouldBreakValidationChain(V value);
+    protected abstract boolean shouldStopValidation(V value);
 
     /**
      * The logic used to compare the constraint
