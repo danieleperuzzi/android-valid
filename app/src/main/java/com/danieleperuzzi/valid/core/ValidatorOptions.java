@@ -44,6 +44,8 @@ public final class ValidatorOptions {
 
     public final static class Builder {
 
+        private final String TAG = getClass().getSimpleName();
+
         private ValidatorOptions instance;
 
         public Builder() {
@@ -51,7 +53,13 @@ public final class ValidatorOptions {
         }
 
         public Builder addConstraint(Constraint<?, ?> constraint) {
-            instance.constraints.add(constraint);
+            if (!constraint.isUnique() || (constraint.isUnique() && instance.constraints.size() == 0)) {
+                instance.constraints.add(constraint);
+            } else {
+                throw new RuntimeException(TAG, new Exception(constraint.getClass().getSimpleName() +
+                        " must be the only one inside the validator options"));
+            }
+
             return this;
         }
 

@@ -16,11 +16,11 @@
 
 package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.core.Constraint;
+import com.danieleperuzzi.valid.core.ComposableConstraint;
 import com.danieleperuzzi.valid.core.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
-public class MandatoryTextConstraint extends Constraint<String, Boolean> {
+public class MandatoryTextConstraint extends ComposableConstraint<String, Boolean> {
 
     public MandatoryTextConstraint(Boolean mandatory, int evaluationPriority, String error) {
         super(mandatory, evaluationPriority, error);
