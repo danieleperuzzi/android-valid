@@ -16,11 +16,11 @@
 
 package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.core.ComposableConstraint;
+import com.danieleperuzzi.valid.core.ChainableConstraint;
 import com.danieleperuzzi.valid.core.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
-public class MinLengthTextConstraint extends ComposableConstraint<String, Integer> {
+public class MinLengthTextConstraint extends ChainableConstraint<String, Integer> {
 
     public MinLengthTextConstraint(Integer minLength, int evaluationPriority, String error) {
         super(minLength, evaluationPriority, error);

@@ -16,14 +16,14 @@
 
 package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.core.ComposableConstraint;
+import com.danieleperuzzi.valid.core.ChainableConstraint;
 import com.danieleperuzzi.valid.core.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegexTextConstraint extends ComposableConstraint<String, String> {
+public class RegexTextConstraint extends ChainableConstraint<String, String> {
 
     public RegexTextConstraint(String regex, int evaluationPriority, String error) {
         super(regex, evaluationPriority, error);

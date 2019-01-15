@@ -19,42 +19,33 @@ package com.danieleperuzzi.valid.core;
 import java.util.Map;
 
 /**
- * Extend this class when the {@link Constraint} is unique inside the {@link ValidatorOptions}
+ * When a {@link Constraint} can exist in conjunction to other ones inside a {@link ValidatorOptions}
+ * then this Class should be used as opposed to {@link UniqueConstraint}
  *
  * @param <V>   the {@link Validable} type
  * @param <C>   the Object that holds information against which the value is going
  *              to be validated
  */
-public abstract class SingleConstraint<V, C> extends Constraint<V, C> {
+public abstract class ChainableConstraint<V, C> extends Constraint<V, C> {
 
-    protected SingleConstraint(C constraint, int evaluationPriority, String error) {
+    protected ChainableConstraint(C constraint, int evaluationPriority, String error) {
         super(constraint, evaluationPriority, error);
     }
 
-    protected SingleConstraint(C constraint, int evaluationPriority, Map<String, String> errorMap) {
+    protected ChainableConstraint(C constraint, int evaluationPriority, Map<String, String> errorMap) {
         super(constraint, evaluationPriority, errorMap);
     }
 
     protected abstract ConstraintResult evaluate(V value);
 
-    /**
-     * Because this {@link Constraint} is unique there's no need to go on the
-     * validation.
-     *
-     * @param value the concrete value that has been validated, we need it
-     *              to take decision about the validation process
-     * @return      tell the Validator if it should go on or stop
-     */
-    protected final boolean shouldStopValidation(V value) {
-        return true;
-    }
+    protected abstract boolean shouldStopValidation(V value);
 
     /**
-     * Declare this {@link Constraint} unique
+     * Declare this {@link Constraint} not unique
      *
-     * @return      true
+     * @return      false
      */
     protected final boolean isUnique() {
-        return true;
+        return false;
     }
 }

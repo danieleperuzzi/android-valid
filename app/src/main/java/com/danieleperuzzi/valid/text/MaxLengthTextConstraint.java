@@ -16,11 +16,11 @@
 
 package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.core.ComposableConstraint;
+import com.danieleperuzzi.valid.core.ChainableConstraint;
 import com.danieleperuzzi.valid.core.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
-public class MaxLengthTextConstraint extends ComposableConstraint<String, Integer> {
+public class MaxLengthTextConstraint extends ChainableConstraint<String, Integer> {
 
     public MaxLengthTextConstraint(Integer maxLength, int evaluationPriority, String error) {
         super(maxLength, evaluationPriority, error);
