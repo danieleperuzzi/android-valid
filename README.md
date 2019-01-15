@@ -110,6 +110,14 @@ be empty and then its minimum length should be 6 characters.
 
 When building the ValidatorOptions then constraint are automatically ordered.
 
+##### Tip
+In case it is needed only one constraint it is possible to use directly SingleValidatorOption
+in this manner:
+
+```java
+ValidatorOptions options = new SingleValidatorOption(new MinLengthTextConstraint(6, 1, "minimum length is 6"));
+```
+
 #### Validating
 
 ```java
@@ -126,6 +134,23 @@ The result encapsulates two informations:
 
 - the status, it can be VALID or NOT_VALID
 - the error message, if any
+
+##### Tip
+If the constraint is only one you can skip the previous [step](#Choosing-constraints)
+passing it directly to the validator
+
+```java
+Constraint<String, Integer> constraint = new MinLengthTextConstraint(6, 1, "minimum length is 6");
+
+validator.validate(validable, constraint, new Validator.Callback() {
+            @Override
+            public void status(Validable<?> value, ValidatorResult result) {
+                //get the result of the validation
+            }
+        });
+```
+
+Internally it calls the SingleValidatorOption shown before.
 
 ### Bulk validation
 ```java
