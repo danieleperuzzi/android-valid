@@ -46,7 +46,34 @@ public abstract class BaseValidator implements Validator {
 
     /**
      * This method simply invokes the one below with the {@link ValidatorObserver}
-     * at null in case is not provided
+     * at null in case is not provided.
+     *
+     * @param value      the {@link Validable} Object that is going to be validated
+     * @param constraint the {@link Constraint} used to check the validable
+     * @param callback   {@link Callback} used to post the validation result
+     */
+    @MainThread
+    public final void validate(Validable<?> value, Constraint<?, ?> constraint, Callback callback) {
+        validate(value, constraint, null, callback);
+    }
+
+    /**
+     * Convenience method used when the {@link Validable} is checked against only one
+     * constraint as opposed to {@link #validate(Validable, ValidatorOptions, ValidatorObserver, Callback)}
+     *
+     * @param value      the {@link Validable} Object that is going to be validated
+     * @param constraint the {@link Constraint} used to check the validable
+     * @param observer   the optional {@link ValidatorObserver}
+     * @param callback   {@link Callback} used to post the validation result
+     */
+    @MainThread
+    public final void validate(Validable<?> value, Constraint<?, ?> constraint, @Nullable ValidatorObserver observer, Callback callback) {
+        validate(value, new SingleValidatorOption(constraint), observer, callback);
+    }
+
+    /**
+     * This method simply invokes the one below with the {@link ValidatorObserver}
+     * at null in case is not provided.
      *
      * @param value    the {@link Validable} Object that is going to be validated
      * @param options  the {@link ValidatorOptions} that the value should all match

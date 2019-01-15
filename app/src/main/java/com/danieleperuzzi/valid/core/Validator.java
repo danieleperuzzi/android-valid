@@ -24,6 +24,36 @@ import android.support.annotation.Nullable;
 public interface Validator {
 
     /**
+     * This method starts the validation on a {@link Validable} Object comparing it
+     * to the only {@link Constraint} provided and post the result using
+     * the supplied {@link Callback}.
+     *
+     * <p>The only difference between this method and the {@link #validate(Validable, ValidatorOptions, Callback)}
+     * is that the latter can check the validable against multiple {@link Constraint}</p>
+     *
+     * @param value         the {@link Validable} Object that is going to be validated
+     * @param constraint    the {@link Constraint} used to check the validable
+     * @param callback      {@link Callback} used to post the validation result
+     */
+    void validate(Validable<?> value, Constraint<?, ?> constraint, Callback callback);
+
+    /**
+     * This method accepts one more parameter respect the one above and it is an
+     * optional {@link ValidatorObserver} that is constantly informed about the
+     * validation output of a certain {@link Validable} in order to know the
+     * global state of a set of {@link Validable}.
+     *
+     * <p>The only difference between this method and the {@link #validate(Validable, ValidatorOptions, ValidatorObserver, Callback)}
+     * is that the latter can check the validable against multiple {@link Constraint}</p>
+     *
+     * @param value         the {@link Validable} Object that is going to be validated
+     * @param constraint    the {@link Constraint} used to check the validable
+     * @param observer      the optional {@link ValidatorObserver}
+     * @param callback      {@link Callback} used to post the validation result
+     */
+    void validate(Validable<?> value, Constraint<?, ?> constraint, @Nullable ValidatorObserver observer, Callback callback);
+
+    /**
      * This method starts the validation on a {@link Validable} Object accordingly
      * to the {@link ValidatorOptions} provided and post the result using
      * the supplied {@link Callback}.
@@ -39,7 +69,7 @@ public interface Validator {
      * This method accepts one more parameter respect the one above and it is an
      * optional {@link ValidatorObserver} that is constantly informed about the
      * validation output of a certain {@link Validable} in order to know the
-     * global state of a set of {@link Validable}
+     * global state of a set of {@link Validable}.
      *
      * @param value     the {@link Validable} Object that is going to be validated
      * @param options   the {@link ValidatorOptions} that the value should all match

@@ -16,62 +16,25 @@
 
 package com.danieleperuzzi.valid.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Every {@link Validable} Object must match all the provided {@link Constraint}
- * in order to be declared validated.
+ * in order to be declared valid.
  *
- * <p>This class simply holds a list of priority ordered constraints
+ * <p>This interface simply exposes a list of priority ordered constraints
  * that must be associated to a validable object.
  * The order on which we evaluate all the constraints is specified
  * in the constraint itself, we just order them so the {@link Validator}
  * can process them one by one</p>
  */
-public final class ValidatorOptions {
+public interface ValidatorOptions {
 
-    private List<Constraint<?, ?>> constraints = new ArrayList<>();
-
-    List<Constraint<?, ?>> getConstraints() {
-        return constraints;
-    }
-
-    private ValidatorOptions() {
-    }
-
-
-    public final static class Builder {
-
-        private final String TAG = getClass().getSimpleName();
-
-        private ValidatorOptions instance;
-
-        public Builder() {
-            this.instance = new ValidatorOptions();
-        }
-
-        public Builder addConstraint(Constraint<?, ?> constraint) {
-            if (!constraint.isUnique() || (constraint.isUnique() && instance.constraints.size() == 0)) {
-                instance.constraints.add(constraint);
-            } else {
-                throw new RuntimeException(TAG, new Exception(constraint.getClass().getSimpleName() +
-                        " must be the only one inside the validator options"));
-            }
-
-            return this;
-        }
-
-
-        /**
-         * When we finally construct the ValidatorOptions Object we also
-         * order the {@link Constraint} by priority, from lower to higher
-         * @return
-         */
-        public ValidatorOptions build() {
-            Collections.sort(instance.constraints);
-            return instance;
-        }
-    }
+    /**
+     * Classes that implements this method should take care of ordering the
+     * {@link Constraint} by priority, from the lowest to the highest
+     *
+     * @return      the priority ordered {@link Constraint}
+     */
+    List<Constraint<?, ?>> getConstraints();
 }
