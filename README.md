@@ -47,7 +47,7 @@ be validated.
 Validator validator = new SingleThreadValidator();
 Validable<String> validable = new ValidableText("Lorem ipsum", TAG);
 
-ValidatorOptions options = new ValidatorOptions.Builder()
+ValidatorOptions options = new MultipleValidatorOptions.Builder()
                 .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
                 .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
                 .build();
@@ -90,7 +90,7 @@ TAG can be null.
 #### Choosing constraints
 
 ```java
-ValidatorOptions options = new ValidatorOptions.Builder()
+ValidatorOptions options = new MultipleValidatorOptions.Builder()
                 .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
                 .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
                 .build();
@@ -138,14 +138,14 @@ Validable<String> password = new ValidableText("password1234", "password");
 String usernameRegex = //put your regex here
 String passwordRegex = //put your regex here
 
-ValidatorOptions usernameOptions = new ValidatorOptions.Builder()
+ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
         .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
         .build();
 
-ValidatorOptions passwordOptions = new ValidatorOptions.Builder()
+ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
@@ -186,14 +186,14 @@ Validable<String> password = new ValidableText("password1234", "password");
 String usernameRegex = //put your regex here
 String passwordRegex = //put your regex here
 
-ValidatorOptions usernameOptions = new ValidatorOptions.Builder()
+ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
         .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
         .build();
 
-ValidatorOptions passwordOptions = new ValidatorOptions.Builder()
+ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
@@ -220,7 +220,7 @@ collectionValidator.validateCollection(optionsMap, new CollectionValidator.Callb
 ```
 
 Validate all the validables in one shot and wait for the result that is a map
-of Validable <==> ValidatorResult, to know everything about every validable,
+of <Validable, ValidatorResult>, to know everything about every validable,
 and a synthetic global status that is either ALL_VALID or AT_LEAST_ONE_NOT_VALID.
 
 ### Observing validation
@@ -233,14 +233,14 @@ Validable<String> password = new ValidableText("password1234", "password");
 String usernameRegex = //put your regex here
 String passwordRegex = //put your regex here
 
-ValidatorOptions usernameOptions = new ValidatorOptions.Builder()
+ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
         .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
         .build();
 
-ValidatorOptions passwordOptions = new ValidatorOptions.Builder()
+ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
@@ -280,14 +280,14 @@ Validable<String> password = new ValidableText("password1234", "password");
 String usernameRegex = //put your regex here
 String passwordRegex = //put your regex here
 
-ValidatorOptions usernameOptions = new ValidatorOptions.Builder()
+ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
         .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
         .build();
 
-ValidatorOptions passwordOptions = new ValidatorOptions.Builder()
+ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
