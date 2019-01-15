@@ -23,6 +23,11 @@ new constraint or to validate different objects.
         - [Preparing validator and validator options map](#Preparing-validator-and-validator-options-map)
         - [Declaring ValidatorObserver](#Declaring-ValidatorObserver)
         - [Validating with observer](#Validating-with-observer)
+- [Extending the library](#Extending-the-library)
+    - [Creating new Validable](#Creating-new-Validable)
+    - [Creating new Constraint](#Creating-new-Constraint)
+        - [Extending UniqueConstraint](#Extending-UniqueConstraint)
+        - [Extending ChainableConstraint](#Extending-ChainableConstraint)
 
 ## Core features
 - single object validation
@@ -355,3 +360,153 @@ validator.validate(username, usernameOptions, observer, new Validator.Callback()
 
 Validator.validate accepts one more parameter that is the observer that get
 informed about every validation done by the validator. See also [Validating](#Validating).
+
+## Extending the library
+This library is intended to be used to validate any kind of object with any kind of
+constraint so if some classes aren't provided it is also very easy to write them.
+
+- [create new Validable](#Creating-new-Validable)
+- [create new Constraint](#Creating-new-Constraint)
+    - [extend UniqueConstraint](#Extending-UniqueConstraint)
+    - [extend ChainableConstraint](#Extending-ChainableConstraint)
+
+### Creating new Validable
+
+```java
+public interface Validable<V> {
+    V getValue();
+    String getTag();
+    void setValue(V value, @Nullable String tag);
+}
+```
+
+Just implement the Validable interface. V represents the type of the object that should be
+validated.<br/>
+The TAG is useful in some situations like when validation ends and you want to know what object
+has been validated.
+
+### Creating new Constraint
+
+```java
+public abstract class Constraint<V, C> implements Comparable<Constraint> {
+
+    ...
+
+    protected Constraint(C constraint, int evaluationPriority, String error) {
+        ...
+    }
+
+    protected Constraint(C constraint, int evaluationPriority, Map<String, String> errorMap) {
+        ...
+    }
+
+    ...
+
+    protected abstract ConstraintResult evaluate(V value);
+    protected abstract boolean shouldStopValidation(V value);
+    protected abstract boolean isUnique();
+
+    ...
+}
+```
+
+Extends this base Class. V has the same meaning as explained [before](#creating-new-Validable), C represents the object
+holding the constraint, String, Integer, whatever that is necessary. Be careful about calling
+super inside the constructors.
+
+**NOTE**<br/>
+If it is provided a value of different type of the one that the constraint
+can validate then a ClassCastException is thrown at runtime.
+
+- **extend Constraint Class**
+    ```java
+    public MyConstraint<String, Integer> extends Constraint {
+
+    ...
+
+    }
+    ```
+
+    The first generic type is the one of the object being validated, the second is the type
+    of the constraint.
+
+- **call super in constructors**
+    ```java
+    protected MyConstraint(Integer constraint, int evaluationPriority, String error) {
+        super(constraint, evaluationPriority, error);
+
+        // do whatever you want
+    }
+
+    protected MyConstraint(Integer constraint, int evaluationPriority, Map<String, String> errorMap) {
+        super(constraint, evaluationPriority, errorMap);
+
+        // do whatever you want
+    }
+    ```
+
+    The two constructors have in common:
+     - **constraint:** the object that hold the constraint that should be compared to the value
+     - **evaluationPriority:** the priority used by the ValidatorOptions to order all the constraint
+
+     instead are mutual exclusive **error** and **errorMap**, the first is used when only one error
+     is thrown, the other when are necessary multiple errors.
+
+- implement **protected ConstraintResult evaluate(String value);**
+    ```java
+    protected ConstraintResult evaluate(String value) {
+        boolean valid;
+        ConstraintResult result;
+        Integer constraint = getConstraint();
+
+        //compare value and constraint
+
+        if(valid) {
+            result = new ConstraintResult(ValidableStatus.VALID, getError());
+        } else {
+            result = new ConstraintResult(ValidableStatus.NOT_VALID, null);
+        }
+
+        return result;
+    }
+    ```
+
+    this is the method where value and constraint are compared to determine if the first
+    is compliant and should be declared VALID or NOT_VALID.
+
+    **Tip**<br/>
+    If there are multiple possible errors just use getErrorMap() method.
+
+
+- implement **protected boolean shouldStopValidation(String value);**
+    ```java
+    protected boolean shouldStopValidation(String value) {
+        boolean shouldStopValidation;
+
+        // check the actual state of the value
+
+        return shouldStopValidation;
+    }
+    ```
+
+    There are some cases when, after a positive evaluation, it is not necessary anymore
+    to continue validation regardless the next constraints, the validable is considered
+    valid.
+
+- implement **protected boolean isUnique();**
+    ```java
+    protected boolean isUnique() {
+        return true;
+    }
+    ```
+
+    Declare that this constraint is the only one inside the ValidatorOptions, otherwise
+    when adding to it a RunTimeException is thrown.
+
+#### Extending UniqueConstraint
+Convenient class to extend when known that the constraint works alone, must implement only
+**constructors** and **protected abstract ConstraintResult evaluate(V value)**.
+
+#### Extending ChainableConstraint
+Opposite to the previous class, used when the constraint may be used along with other constraints.
+**protected abstract boolean isUnique()** is already implemented.
