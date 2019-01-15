@@ -462,9 +462,9 @@ can validate then a ClassCastException is thrown at runtime.
         //compare value and constraint
 
         if(valid) {
-            result = new ConstraintResult(ValidableStatus.VALID, getError());
+            result = new ConstraintResult(ValidableStatus.VALID, null);
         } else {
-            result = new ConstraintResult(ValidableStatus.NOT_VALID, null);
+            result = new ConstraintResult(ValidableStatus.NOT_VALID, getError());
         }
 
         return result;
