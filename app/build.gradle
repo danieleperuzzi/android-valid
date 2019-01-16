@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-project.ext.library_version = '0.1'
+project.ext.library_version = '1.0.0-beta01'
 project.ext.library_url = 'https://github.com/danieleperuzzi/android-valid'
 project.ext.library_git_url = 'https://github.com/danieleperuzzi/android-valid.git'
 project.ext.library_description = 'This library allows you to do simple and easy field validation on your Android App'
@@ -48,8 +48,8 @@ install {
             inceptionYear '2019'
 
             packaging 'aar'
-            groupId 'com.danieleperuzzi'
-            artifactId 'android-valid'
+            groupId 'com.danieleperuzzi.android-valid'
+            artifactId 'valid'
             version project.library_version
 
             licenses {
