@@ -14,6 +14,7 @@ new constraint or to validate different objects.
         - [Declaring Validator](#Declaring-Validator)
         - [Declaring Validable](#Declaring-Validable)
         - [Choosing constraints](#Choosing-constraints)
+            - [Using ValidatorOptionsFactory](#Using-ValidatorOptionsFactory)
         - [Validating](#Validating)
     - [Bulk validation](#Bulk-validation)
         - [Declaring BulkValidator](#Declaring-BulkValidator)
@@ -46,6 +47,7 @@ be validated.
 - [declare Validator](#Declaring-Validator)
 - [declare Validable](#Declaring-Validable)
 - [choose constraints](#Choosing-constraints)
+    - [optional: use ValidatorOptionsFactory](#Using-ValidatorOptionsFactory)
 - [validate](#Validating)
 
 ```java
@@ -115,12 +117,51 @@ be empty and then its minimum length should be 6 characters.
 
 When building the ValidatorOptions then constraint are automatically ordered.
 
-##### Tip
+###### Tip
 In case it is needed only one constraint it is possible to use directly SingleValidatorOption
 in this manner:
 
 ```java
 ValidatorOptions options = new SingleValidatorOption(new MinLengthTextConstraint(6, 1, "minimum length is 6"));
+```
+
+##### Using ValidatorOptionsFactory
+It may happen that the same objects must be validated in different sections of the app so,
+in order to make code clearer, create all the ValidatorOptions for each object and retrieve
+them when necessary with **ValidatorOptionsFactory**.
+
+```java
+String usernameRegex = //put your regex here
+String USERNAME_TAG = //tag for the username
+
+String passwordRegex = //put your regex here
+String PASSWORD_TAG = //tag for the password
+
+ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
+        .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
+        .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
+        .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
+        .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
+        .build();
+
+ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
+        .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
+        .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
+        .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
+        .addConstraint(new RegexTextConstraint(passwordRegex, 3, "password must contain only letters"))
+        .build();
+
+Map<String, ValidatorOptions> optionsMap = new HashMap<>();
+optionsMap.put(USERNAME_TAG, usernameOptions);
+optionsMap.put(PASSWORD_TAG, passwordOptions);
+
+ValidatorOptionsFactory optionsFactory = new ValidatorOptionsFactory(optionsMap);
+```
+
+Later just retrieve the desidered ValidatorOptions
+
+```java
+ValidatorOptions usernameOptions = optionsFactory.getOptionsByTag(USERNAME_TAG);
 ```
 
 #### Validating
@@ -140,7 +181,7 @@ The result encapsulates two informations:
 - the status, it can be VALID or NOT_VALID
 - the error message, if any
 
-##### Tip
+###### Tip
 If the constraint is only one you can skip the previous [step](#Choosing-constraints)
 passing it directly to the validator
 
