@@ -77,6 +77,8 @@ There are three custom Validator implementation:
 - **PoolThreadValidator:** validation is done on a worker thread taken from
 a thread pool
 
+You can also use directly the **BaseValidator** class passing to it an Executor.
+
 #### Declaring Validable
 
 ```java

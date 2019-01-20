@@ -16,19 +16,11 @@
 
 package com.danieleperuzzi.valid.core.impl;
 
-import android.support.annotation.MainThread;
-import android.support.annotation.Nullable;
-
 import com.danieleperuzzi.valid.core.BaseValidator;
-import com.danieleperuzzi.valid.core.Validable;
-import com.danieleperuzzi.valid.core.ValidatorObserver;
-import com.danieleperuzzi.valid.core.ValidatorOptions;
 
 public class MainThreadValidator extends BaseValidator {
 
-    @Override
-    @MainThread
-    public void startValidation(Validable<?> value, ValidatorOptions options, @Nullable ValidatorObserver observer, Callback callback) {
-        doValidation(value, options, observer, callback);
+    public MainThreadValidator() {
+        super(Runnable::run);
     }
 }

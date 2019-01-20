@@ -25,23 +25,33 @@ import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /**
- * This is the main Class implementing {@link Validator} interface,
- * it is never instantiated directly instead it must be subclassed and
- * then instantiated.
+ * This is the base Class implementing {@link Validator} interface
+ * providing the main structure of the validation algorithm.
  *
- * <p>It provides the main structure of the validation algorithm</p>
+ * <p>it is possible to instantiate it directly just passing an executor
+ * implementation or just use the provided subclasses:</p>
+ *
+ * <ul>
+ *     <li>{@link com.danieleperuzzi.valid.core.impl.MainThreadValidator}</li>
+ *     <li>{@link com.danieleperuzzi.valid.core.impl.SingleThreadValidator}</li>
+ *     <li>{@link com.danieleperuzzi.valid.core.impl.PoolThreadValidator}</li>
+ * </ul>
  *
  * <p>It also notifies an optional {@link ValidatorObserver} about
  * the result of the validation of a particular {@link Validable}</p>
  */
-public abstract class BaseValidator implements Validator {
+public class BaseValidator implements Validator {
 
     private final Looper mainLooper = Looper.getMainLooper();
     private final Handler mainThreadHandler = new Handler(mainLooper);
 
-    protected BaseValidator() {
+    private Executor executor;
+
+    public BaseValidator(Executor executor) {
+        this.executor = executor;
     }
 
     /**
@@ -88,7 +98,9 @@ public abstract class BaseValidator implements Validator {
     /**
      * This method is the main entry point of the validation process, it takes care
      * of the fact that the validation must start on the main thread otherwise
-     * it throws a {@link RuntimeException}
+     * it throws a {@link RuntimeException}.
+     *
+     * <p>It uses an executor to run the validation algorithm.</p>
      *
      * @param value     the {@link Validable} Object that is going to be validated
      * @param options   the {@link ValidatorOptions} that the value should all match
@@ -99,24 +111,12 @@ public abstract class BaseValidator implements Validator {
     @MainThread
     public final void validate(Validable<?> value, ValidatorOptions options, @Nullable ValidatorObserver observer, Validator.Callback callback) {
         if (currentThreadIsMainThread()) {
-            startValidation(value, options, observer, callback);
+            Runnable runnable = doValidation(value, options, observer, callback);
+            executor.execute(runnable);
         } else {
             throw new RuntimeException("validation must start on the main thread");
         }
     }
-
-    /**
-     * The main purpose of this method is to give the possibility to implement custom validation
-     * logic such as threading logic
-     *
-     * @param value     the {@link Validable} Object that is going to be validated
-     * @param options   the {@link ValidatorOptions} that the value should all match
-     *                  to be positive validated
-     * @param observer  the optional {@link ValidatorObserver}
-     * @param callback  {@link Callback} used to post the validation result
-     */
-    @MainThread
-    protected abstract void startValidation(Validable<?> value, ValidatorOptions options, @Nullable ValidatorObserver observer, Validator.Callback callback);
 
     /**
      * The main validation algorithm. We get all the constraints that the {@link Validable} must
@@ -137,23 +137,26 @@ public abstract class BaseValidator implements Validator {
      *                  to be positive validated
      * @param observer  the optional {@link ValidatorObserver}
      * @param callback  {@link Callback} used to post the validation result
+     * @return          the runnable that encapsulates the validation algorithm
      */
     @AnyThread
-    protected final void doValidation(Validable<?> value, ValidatorOptions options, @Nullable ValidatorObserver observer, Validator.Callback callback) {
-        List<Constraint<?, ?>> constraints = options.getConstraints();
-        ConstraintResult constraintResult = null;
+    private Runnable doValidation(Validable<?> value, ValidatorOptions options, @Nullable ValidatorObserver observer, Validator.Callback callback) {
+        return () -> {
+            List<Constraint<?, ?>> constraints = options.getConstraints();
+            ConstraintResult constraintResult = null;
 
-        for (Constraint<?, ?> constraint : constraints) {
-            constraintResult = constraint.evaluate(value);
+            for (Constraint<?, ?> constraint : constraints) {
+                constraintResult = constraint.evaluate(value);
 
-            if (constraintResult.status == ValidableStatus.NOT_VALID || (constraintResult.status == ValidableStatus.VALID && constraint.shouldStopValidation(value))) {
-                postResult(value, new ValidatorResult(constraintResult), observer, callback);
-                return;
+                if (constraintResult.status == ValidableStatus.NOT_VALID || (constraintResult.status == ValidableStatus.VALID && constraint.shouldStopValidation(value))) {
+                    postResult(value, new ValidatorResult(constraintResult), observer, callback);
+                    return;
+                }
             }
-        }
 
-        //if we reach this point we can say that all the constraints had evaluated to true
-        postResult(value, new ValidatorResult(constraintResult), observer, callback);
+            //if we reach this point we can say that all the constraints had evaluated to true
+            postResult(value, new ValidatorResult(constraintResult), observer, callback);
+        };
     }
 
     /**

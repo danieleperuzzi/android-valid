@@ -16,32 +16,13 @@
 
 package com.danieleperuzzi.valid.core.impl;
 
-import android.support.annotation.MainThread;
-import android.support.annotation.Nullable;
-
 import com.danieleperuzzi.valid.core.BaseValidator;
-import com.danieleperuzzi.valid.core.Validable;
-import com.danieleperuzzi.valid.core.ValidatorObserver;
-import com.danieleperuzzi.valid.core.ValidatorOptions;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class SingleThreadValidator extends BaseValidator {
 
-    private Executor executor;
-
     public SingleThreadValidator() {
-        executor = Executors.newSingleThreadExecutor();
-    }
-
-    @Override
-    @MainThread
-    public void startValidation(Validable<?> value, ValidatorOptions options, @Nullable ValidatorObserver observer, Callback callback) {
-        Runnable runnable = () -> {
-          doValidation(value, options, observer, callback);
-        };
-
-        executor.execute(runnable);
+        super(Executors.newSingleThreadExecutor());
     }
 }
