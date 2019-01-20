@@ -27,8 +27,6 @@ new constraint or to validate different objects.
 - [Extending the library](#Extending-the-library)
     - [Creating new Validable](#Creating-new-Validable)
     - [Creating new Constraint](#Creating-new-Constraint)
-        - [Extending UniqueConstraint](#Extending-UniqueConstraint)
-        - [Extending ChainableConstraint](#Extending-ChainableConstraint)
 
 ## Core features
 - single object validation
@@ -408,8 +406,6 @@ constraint so if some classes aren't provided it is also very easy to write them
 
 - [create new Validable](#Creating-new-Validable)
 - [create new Constraint](#Creating-new-Constraint)
-    - [extend UniqueConstraint](#Extending-UniqueConstraint)
-    - [extend ChainableConstraint](#Extending-ChainableConstraint)
 
 ### Creating new Validable
 
@@ -445,7 +441,6 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
 
     protected abstract ConstraintResult evaluate(V value);
     protected abstract boolean shouldStopValidation(V value);
-    protected abstract boolean isUnique();
 
     ...
 }
@@ -533,21 +528,3 @@ can validate then a ClassCastException is thrown at runtime.
     There are some cases when, after a positive evaluation, it is not necessary anymore
     to continue validation regardless the next constraints, the validable is considered
     valid.
-
-- implement **protected boolean isUnique();**
-    ```java
-    protected boolean isUnique() {
-        return true;
-    }
-    ```
-
-    Declare that this constraint is the only one inside the ValidatorOptions, otherwise
-    when adding to it a RunTimeException is thrown.
-
-#### Extending UniqueConstraint
-Convenient class to extend when known that the constraint works alone, must implement only
-**constructors** and **protected abstract ConstraintResult evaluate(V value)**.
-
-#### Extending ChainableConstraint
-Opposite to the previous class, used when the constraint may be used along with other constraints.
-**protected abstract boolean isUnique()** is already implemented.

@@ -47,13 +47,7 @@ public final class MultipleValidatorOptions implements ValidatorOptions {
         }
 
         public Builder addConstraint(Constraint<?, ?> constraint) {
-            if (!constraint.isUnique() || (constraint.isUnique() && instance.constraints.size() == 0)) {
-                instance.constraints.add(constraint);
-            } else {
-                throw new RuntimeException(TAG, new Exception(constraint.getClass().getSimpleName() +
-                        " must be the only one inside the validator options"));
-            }
-
+            instance.constraints.add(constraint);
             return this;
         }
 

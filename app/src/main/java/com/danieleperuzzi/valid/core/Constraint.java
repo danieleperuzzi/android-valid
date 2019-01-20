@@ -182,14 +182,6 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
     protected abstract boolean shouldStopValidation(V value);
 
     /**
-     * Used to tell the {@link ValidatorOptions} that this constraint
-     * should be the only one in the constraint list
-     *
-     * @return      true if this constraint is unique otherwise false
-     */
-    protected abstract boolean isUnique();
-
-    /**
      * The logic used to compare the constraint
      *
      * @param constraint    the constraint against which compare
