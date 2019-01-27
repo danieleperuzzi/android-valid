@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.core;
+package com.danieleperuzzi.valid.core.validator;
 
-import com.danieleperuzzi.valid.core.impl.MainThreadValidator;
+import com.danieleperuzzi.valid.core.collectionvalidator.BulkValidator;
+import com.danieleperuzzi.valid.core.CollectionValidator;
+import com.danieleperuzzi.valid.core.constraint.SortedConstraintSet;
+import com.danieleperuzzi.valid.core.Validable;
+import com.danieleperuzzi.valid.core.ValidableCollectionStatus;
+import com.danieleperuzzi.valid.core.ValidableStatus;
+import com.danieleperuzzi.valid.core.Validator;
+import com.danieleperuzzi.valid.core.validator.impl.MainThreadValidator;
 
 import java.util.Map;
 
@@ -27,12 +34,12 @@ import java.util.Map;
  */
 public final class ValidatorObserver {
 
-    private Map<Validable<?>, ValidatorResult> validableResults;
+    private Map<Validable<?>, ValidatorResult> validatorResultByValidableMap;
     private CollectionValidator.Callback callback;
 
-    private int totalValidables = 0;
-    private int validatedValidables = 0;
-    private int notValidatedValidables = 0;
+    private int validableInstances = 0;
+    private int validValidables = 0;
+    private int notValidValidables = 0;
 
     /**
      * In order to observe the global status of a {@link Validable} collection every time
@@ -45,14 +52,15 @@ public final class ValidatorObserver {
      * <p>To achieve this the {@link Helper} Class is used, it performs a bulk validation
      * on the entire collection and give us back the initial result.</p>
      *
-     * @param validables    the map used to track the set of {@link Validable} to observe
-     *                      and to initialize the {@link Helper} Object
-     * @param callback      {@link CollectionValidator.Callback} used to post the result
+     * @param constraintSetByValidableMap   the map used to track the set of {@link Validable}
+     *                                      to observe and to initialize the {@link Helper} Object
+     * @param callback                      {@link CollectionValidator.Callback} used to post
+     *                                      the result
      */
-    public ValidatorObserver(Map<Validable<?>, ValidatorOptions> validables, CollectionValidator.Callback callback) {
-        Helper helper = new Helper(validables);
+    public ValidatorObserver(Map<Validable<?>, SortedConstraintSet> constraintSetByValidableMap, CollectionValidator.Callback callback) {
+        Helper helper = new Helper(constraintSetByValidableMap);
 
-        this.validableResults = helper.getValidableResults();
+        this.validatorResultByValidableMap = helper.getInitialStatus();
         this.callback = callback;
 
         init();
@@ -62,39 +70,39 @@ public final class ValidatorObserver {
      * Just used to count the initial statuses of the {@link Validable} collection
      */
     private void init() {
-        totalValidables = validableResults.size();
+        validableInstances = validatorResultByValidableMap.size();
 
-        for (Map.Entry<Validable<?>, ValidatorResult> entry : validableResults.entrySet()) {
+        for (Map.Entry<Validable<?>, ValidatorResult> entry : validatorResultByValidableMap.entrySet()) {
             ValidatorResult initialResult = entry.getValue();
 
             if (initialResult.status == ValidableStatus.VALID) {
-                validatedValidables++;
+                validValidables++;
             } else {
-                notValidatedValidables++;
+                notValidValidables++;
             }
         }
     }
 
     /**
      * Update the global status of the collection only if the new status differs from
-     * the previous and then put the new status in the {@link #validableResults} map.
+     * the previous and then put the new status in the {@link #validatorResultByValidableMap}
      *
      * @param value             the {@link Validable} that has been validated
      * @param currentResult     the result given by the {@link Validator}
-     * @param previousResult    the result held in the {@link #validableResults} map before
-     *                          it may be updated
+     * @param previousResult    the result held in the {@link #validatorResultByValidableMap}
+     *                          before it may be updated
      */
     private void update(Validable<?> value, ValidatorResult currentResult, ValidatorResult previousResult) {
         if (!currentResult.equals(previousResult)) {
             if (currentResult.status == ValidableStatus.VALID) {
-                validatedValidables++;
-                notValidatedValidables--;
+                validValidables++;
+                notValidValidables--;
             } else {
-                validatedValidables--;
-                notValidatedValidables++;
+                validValidables--;
+                notValidValidables++;
             }
 
-            validableResults.put(value, currentResult);
+            validatorResultByValidableMap.put(value, currentResult);
         }
     }
 
@@ -106,13 +114,13 @@ public final class ValidatorObserver {
         if (callback != null) {
             ValidableCollectionStatus actualStatus;
 
-            if (validatedValidables < totalValidables) {
+            if (validValidables < validableInstances) {
                 actualStatus = ValidableCollectionStatus.AT_LEAST_ONE_NOT_VALID;
             } else {
                 actualStatus = ValidableCollectionStatus.ALL_VALID;
             }
 
-            callback.status(validableResults, actualStatus);
+            callback.status(validatorResultByValidableMap, actualStatus);
         }
     }
 
@@ -128,9 +136,9 @@ public final class ValidatorObserver {
      * @param result    the result of the validation
      */
     void notify(Validable<?> value, ValidatorResult result) {
-        if (validableResults != null && validableResults.containsKey(value)) {
+        if (validatorResultByValidableMap != null && validatorResultByValidableMap.containsKey(value)) {
             synchronized (this) {
-                update(value, result, validableResults.get(value));
+                update(value, result, validatorResultByValidableMap.get(value));
                 triggerListener();
             }
         }
@@ -143,33 +151,34 @@ public final class ValidatorObserver {
      */
     private static class Helper {
 
-        private CollectionValidator validator;
+        private CollectionValidator collectionValidator;
 
-        private Map<Validable<?>, ValidatorOptions> validables;
-        private Map<Validable<?>, ValidatorResult> validableResults;
+        private Map<Validable<?>, SortedConstraintSet> constraintSetByValidableMap;
+        private Map<Validable<?>, ValidatorResult> validatorResultByValidableMap;
 
-        private Map<Validable<?>, ValidatorResult> getValidableResults() {
-            return validableResults;
+        private Map<Validable<?>, ValidatorResult> getInitialStatus() {
+            return validatorResultByValidableMap;
         }
 
         /**
          * During object creation we do bulk validation on the set of {@link Validable}
-         * on the main thread ensuring that {@link #validableResults} is assigned
-         * when done and any subsequent calls to {@link #getValidableResults()} returns
-         * the map needed by the {@link ValidatorObserver}
+         * on the main thread ensuring that {@link #validatorResultByValidableMap}
+         * is assigned when done and any subsequent calls to {@link #getInitialStatus()}
+         * returns the map needed by the {@link ValidatorObserver}
          *
-         * @param validables    the data used by {@link CollectionValidator} to operate
+         * @param constraintSetByValidableMap   the data used by {@link CollectionValidator}
+         *                                      to operate
          */
-        private Helper(Map<Validable<?>, ValidatorOptions> validables) {
-            validator = new BulkValidator(new MainThreadValidator());
-            this.validables = validables;
+        private Helper(Map<Validable<?>, SortedConstraintSet> constraintSetByValidableMap) {
+            collectionValidator = new BulkValidator(new MainThreadValidator());
+            this.constraintSetByValidableMap = constraintSetByValidableMap;
 
             init();
         }
 
         private void init() {
-            validator.validateCollection(validables, (validableResults, status) -> {
-                this.validableResults = validableResults;
+            collectionValidator.validateCollection(constraintSetByValidableMap, (validatorResultByValidableMap, status) -> {
+                this.validatorResultByValidableMap = validatorResultByValidableMap;
             });
         }
     }

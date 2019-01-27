@@ -16,8 +16,8 @@
 
 package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.core.Constraint;
-import com.danieleperuzzi.valid.core.ConstraintResult;
+import com.danieleperuzzi.valid.core.constraint.Constraint;
+import com.danieleperuzzi.valid.core.constraint.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
 public class MaxLengthTextConstraint extends Constraint<String, Integer> {

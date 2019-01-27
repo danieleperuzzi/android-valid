@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.core.impl;
+package com.danieleperuzzi.valid.core.validator.impl;
 
-import com.danieleperuzzi.valid.core.BaseValidator;
+import android.os.Handler;
+import android.os.Looper;
+
+import com.danieleperuzzi.valid.core.validator.BaseValidator;
+import com.danieleperuzzi.valid.core.validator.ValidatorAlgorithmFactory;
 
 import java.util.concurrent.Executors;
 
-public class PoolThreadValidator extends BaseValidator {
+public class SingleThreadValidator extends BaseValidator {
 
-    private static int cpuNum = Runtime.getRuntime().availableProcessors();
+    private static final ValidatorAlgorithmFactory factory = new ValidatorAlgorithmFactory();
+    private static final Looper mainThreadLooper = Looper.getMainLooper();
+    private static final Handler mainThreadHandler = new Handler(mainThreadLooper);
 
-    public PoolThreadValidator() {
-        super(Executors.newFixedThreadPool(cpuNum));
+    public SingleThreadValidator() {
+        super(Executors.newSingleThreadExecutor(), factory, mainThreadHandler);
     }
 }

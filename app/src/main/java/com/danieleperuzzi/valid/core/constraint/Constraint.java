@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.core;
+package com.danieleperuzzi.valid.core.constraint;
 
-import android.support.annotation.NonNull;
+import com.danieleperuzzi.valid.core.Validable;
 
 import java.util.Map;
 
@@ -34,12 +34,12 @@ import java.util.Map;
  * @param <C>   the Object that holds information against which the value is going
  *              to be validated
  */
-public abstract class Constraint<V, C> implements Comparable<Constraint> {
+public abstract class Constraint<V, C> {
 
     private C constraint;
 
     /**
-     * Every Constraint declares its priority used by the ValidatorOptions
+     * Every Constraint declares its priority used by the SortedConstraintSet
      * to order them. This is necessary to let the Validator be able
      * to check the constraints in the correct order.
      *
@@ -53,6 +53,10 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
 
     protected final C getConstraint() {
         return constraint;
+    }
+
+    protected final int getEvaluationPriority() {
+        return evaluationPriority;
     }
 
     protected final String getError() {
@@ -130,10 +134,10 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      * @return                      the result of the operation that is a status
      *                              and an optional error message
      */
-     final ConstraintResult evaluate(Validable<?> value) {
+     public final ConstraintResult evaluate(Validable<?> value) {
         V concreteValue = tryToGetConcreteValidableValue(value);
         return evaluate(concreteValue);
-    }
+     }
 
     /**
      * Every constraints validates a single portion of a {@link Validable} Object
@@ -161,10 +165,10 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      *              we need it to take decision about the validation process
      * @return      tell the Validator if it should go on or stop
      */
-     final boolean shouldStopValidation(Validable<?> value) {
+     public final boolean shouldStopValidation(Validable<?> value) {
         V concreteValue = tryToGetConcreteValidableValue(value);
         return shouldStopValidation(concreteValue);
-    }
+     }
 
     /**
      * Based on the concrete value that has been validated, this method decides if
@@ -180,29 +184,4 @@ public abstract class Constraint<V, C> implements Comparable<Constraint> {
      * @return      tell the Validator if it should go on or stop
      */
     protected abstract boolean shouldStopValidation(V value);
-
-    /**
-     * The logic used to compare the constraint
-     *
-     * @param constraint    the constraint against which compare
-     * @return              an integer as declared in the {@link Comparable} interface
-     */
-    @Override
-    public final int compareTo(@NonNull Constraint constraint) {
-        int result = 0;
-
-        if (this.evaluationPriority < constraint.evaluationPriority) {
-            result = -1;
-        }
-
-        if (this.evaluationPriority == constraint.evaluationPriority) {
-            result = 0;
-        }
-
-        if (this.evaluationPriority > constraint.evaluationPriority) {
-            result = 1;
-        }
-
-        return result;
-    }
 }

@@ -16,25 +16,25 @@
 
 package com.danieleperuzzi.valid.util;
 
-import com.danieleperuzzi.valid.core.ValidatorOptions;
+import com.danieleperuzzi.valid.core.constraint.SortedConstraintSet;
 
 import java.util.Map;
 
 /**
- * Useful to instantiate once all the {@link ValidatorOptions} of a collection
+ * Useful to instantiate once all the {@link SortedConstraintSet} of a collection
  * of validables and then retrieve them when needed.
  */
-public class ValidatorOptionsFactory {
+public class SortedConstraintSetFactory {
 
-    private Map<String, ValidatorOptions> validatorOptionsMap;
+    private Map<String, SortedConstraintSet> constraintSetMap;
 
-    public ValidatorOptionsFactory(Map<String, ValidatorOptions> validatorOptionsMap) {
-        this.validatorOptionsMap = validatorOptionsMap;
+    public SortedConstraintSetFactory(Map<String, SortedConstraintSet> constraintSetMap) {
+        this.constraintSetMap = constraintSetMap;
     }
 
-    public ValidatorOptions getOptionsByTag(String tag) {
-        if (validatorOptionsMap != null) {
-            return validatorOptionsMap.get(tag);
+    public SortedConstraintSet getConstraintSetByTag(String tag) {
+        if (constraintSetMap != null) {
+            return constraintSetMap.get(tag);
         }
 
         return null;

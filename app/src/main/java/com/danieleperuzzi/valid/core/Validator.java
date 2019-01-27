@@ -18,6 +18,11 @@ package com.danieleperuzzi.valid.core;
 
 import android.support.annotation.Nullable;
 
+import com.danieleperuzzi.valid.core.constraint.Constraint;
+import com.danieleperuzzi.valid.core.constraint.SortedConstraintSet;
+import com.danieleperuzzi.valid.core.validator.ValidatorObserver;
+import com.danieleperuzzi.valid.core.validator.ValidatorResult;
+
 /**
  * This interface represents the entry point of the whole validation process.
  */
@@ -28,7 +33,7 @@ public interface Validator {
      * to the only {@link Constraint} provided and post the result using
      * the supplied {@link Callback}.
      *
-     * <p>The only difference between this method and the {@link #validate(Validable, ValidatorOptions, Callback)}
+     * <p>The only difference between this method and the {@link #validate(Validable, SortedConstraintSet, Callback)}
      * is that the latter can check the validable against multiple {@link Constraint}</p>
      *
      * @param value         the {@link Validable} Object that is going to be validated
@@ -43,7 +48,7 @@ public interface Validator {
      * validation output of a certain {@link Validable} in order to know the
      * global state of a set of {@link Validable}.
      *
-     * <p>The only difference between this method and the {@link #validate(Validable, ValidatorOptions, ValidatorObserver, Callback)}
+     * <p>The only difference between this method and the {@link #validate(Validable, SortedConstraintSet, ValidatorObserver, Callback)}
      * is that the latter can check the validable against multiple {@link Constraint}</p>
      *
      * @param value         the {@link Validable} Object that is going to be validated
@@ -55,15 +60,15 @@ public interface Validator {
 
     /**
      * This method starts the validation on a {@link Validable} Object accordingly
-     * to the {@link ValidatorOptions} provided and post the result using
+     * to the {@link SortedConstraintSet} provided and post the result using
      * the supplied {@link Callback}.
      *
-     * @param value     the {@link Validable} Object that is going to be validated
-     * @param options   the {@link ValidatorOptions} that the value should all match
-     *                  to be positive validated
-     * @param callback  {@link Callback} used to post the validation result
+     * @param value             the {@link Validable} Object that is going to be validated
+     * @param constraintSet     the {@link SortedConstraintSet} that the value should all match
+     *                          to be positive validated
+     * @param callback          {@link Callback} used to post the validation result
      */
-    void validate(Validable<?> value, ValidatorOptions options, Callback callback);
+    void validate(Validable<?> value, SortedConstraintSet constraintSet, Callback callback);
 
     /**
      * This method accepts one more parameter respect the one above and it is an
@@ -71,13 +76,13 @@ public interface Validator {
      * validation output of a certain {@link Validable} in order to know the
      * global state of a set of {@link Validable}.
      *
-     * @param value     the {@link Validable} Object that is going to be validated
-     * @param options   the {@link ValidatorOptions} that the value should all match
-     *                  to be positive validated
-     * @param observer  the optional {@link ValidatorObserver}
-     * @param callback  {@link Callback} used to post the validation result
+     * @param value             the {@link Validable} Object that is going to be validated
+     * @param constraintSet     the {@link SortedConstraintSet} that the value should all match
+     *                          to be positive validated
+     * @param observer          the optional {@link ValidatorObserver}
+     * @param callback          {@link Callback} used to post the validation result
      */
-    void validate(Validable<?> value, ValidatorOptions options, @Nullable ValidatorObserver observer, Callback callback);
+    void validate(Validable<?> value, SortedConstraintSet constraintSet, @Nullable ValidatorObserver observer, Callback callback);
 
     /**
      * This interface is the callback itself, invoked by the Validator

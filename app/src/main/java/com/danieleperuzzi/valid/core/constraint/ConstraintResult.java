@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.core;
+package com.danieleperuzzi.valid.core.constraint;
 
 import android.support.annotation.Nullable;
+
+import com.danieleperuzzi.valid.core.ValidableStatus;
 
 /**
  * This Class holds the result of a validation done by a single {@link Constraint}
@@ -26,10 +28,10 @@ import android.support.annotation.Nullable;
  */
 public final class ConstraintResult {
 
-    ValidableStatus status;
+    public ValidableStatus status;
 
     @Nullable
-    String constraintError;
+    public String constraintError;
 
     private ConstraintResult() {
     }

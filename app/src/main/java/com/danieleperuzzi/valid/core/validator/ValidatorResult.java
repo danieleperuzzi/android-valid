@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.core;
+package com.danieleperuzzi.valid.core.validator;
 
 import android.support.annotation.Nullable;
+
+import com.danieleperuzzi.valid.core.constraint.Constraint;
+import com.danieleperuzzi.valid.core.constraint.ConstraintResult;
+import com.danieleperuzzi.valid.core.ValidableStatus;
+import com.danieleperuzzi.valid.core.Validator;
 
 import java.util.Objects;
 
@@ -43,7 +48,7 @@ public final class ValidatorResult {
      *
      * @param result    the {@link ConstraintResult} given by {@link Constraint#evaluate(Object)}
      */
-    ValidatorResult(ConstraintResult result) {
+    public ValidatorResult(ConstraintResult result) {
         this.status = result.status;
         this.validatorError = result.constraintError;
     }

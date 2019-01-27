@@ -16,6 +16,10 @@
 
 package com.danieleperuzzi.valid.core;
 
+import com.danieleperuzzi.valid.core.constraint.SortedConstraintSet;
+import com.danieleperuzzi.valid.core.validator.ValidatorObserver;
+import com.danieleperuzzi.valid.core.validator.ValidatorResult;
+
 import java.util.Map;
 
 /**
@@ -25,13 +29,14 @@ import java.util.Map;
 public interface CollectionValidator {
 
     /**
-     * It starts the validation on a map of <{@link Validable}, {@link ValidatorOptions}> and then
+     * It starts the validation on a map of <{@link Validable}, {@link SortedConstraintSet}> and then
      * post the result using the supplied callback.
      *
-     * @param validableMap  map of <{@link Validable}, {@link ValidatorOptions}> to be validated
-     * @param callback      callback used to post the validation result
+     * @param constraintSetByValidableMap   map of <{@link Validable}, {@link SortedConstraintSet}>
+     *                                      to be validated
+     * @param callback                      callback used to post the validation result
      */
-    void validateCollection(Map<Validable<?>, ValidatorOptions> validableMap, Callback callback);
+    void validateCollection(Map<Validable<?>, SortedConstraintSet> constraintSetByValidableMap, Callback callback);
 
     /**
      * This interface is the callback itself, invoked by the CollectionValidator
@@ -53,9 +58,9 @@ public interface CollectionValidator {
          * to get informations about the global state every time one of them
          * is validated</p>
          *
-         * @param validableResults  map of <{@link Validable}, {@link ValidatorResult}>
-         * @param status            the global status of the {@link Validable} set
+         * @param validatorResultByValidableMap     map of <{@link Validable}, {@link ValidatorResult}>
+         * @param status                            the global status of the {@link Validable} set
          */
-        void status(Map<Validable<?>, ValidatorResult> validableResults, ValidableCollectionStatus status);
+        void status(Map<Validable<?>, ValidatorResult> validatorResultByValidableMap, ValidableCollectionStatus status);
     }
 }

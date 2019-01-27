@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.danieleperuzzi.valid.core.impl;
+package com.danieleperuzzi.valid.core.collectionvalidator;
 
-import com.danieleperuzzi.valid.core.BaseValidator;
+import com.danieleperuzzi.valid.core.CollectionValidator;
 
-import java.util.concurrent.Executors;
+/**
+ * Used by the {@link BulkValidator} to get new {@link BulkValidatorProcessor}
+ * every time it needs.
+ */
+public final class BulkValidatorProcessorFactory {
 
-public class SingleThreadValidator extends BaseValidator {
+    public BulkValidatorProcessorFactory() {
+    }
 
-    public SingleThreadValidator() {
-        super(Executors.newSingleThreadExecutor());
+    BulkValidatorProcessor createBulkValidatorProcessor(int validableInstances, CollectionValidator.Callback callback) {
+        return new BulkValidatorProcessor(validableInstances, callback);
     }
 }

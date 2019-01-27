@@ -14,14 +14,14 @@ new constraint or to validate different objects.
         - [Declaring Validator](#Declaring-Validator)
         - [Declaring Validable](#Declaring-Validable)
         - [Choosing constraints](#Choosing-constraints)
-            - [Using ValidatorOptionsFactory](#Using-ValidatorOptionsFactory)
+            - [Using SortedConstraintSetFactory](#Using-SortedConstraintSetFactory)
         - [Validating](#Validating)
     - [Bulk validation](#Bulk-validation)
         - [Declaring BulkValidator](#Declaring-BulkValidator)
-        - [Preparing ValidatorOptions map](#Preparing-ValidatorOptions-map)
+        - [Preparing SortedConstraintSet map](#Preparing-SortedConstraintSet-map)
         - [Validating all](#Validating-all)
     - [Observing validation](#Observing-validation)
-        - [Preparing validator and validator options map](#Preparing-validator-and-validator-options-map)
+        - [Preparing validator and SortedConstraintSet map](#Preparing-validator-and-SortedConstraintSet-map)
         - [Declaring ValidatorObserver](#Declaring-ValidatorObserver)
         - [Validating with observer](#Validating-with-observer)
 - [Extending the library](#Extending-the-library)
@@ -45,19 +45,19 @@ be validated.
 - [declare Validator](#Declaring-Validator)
 - [declare Validable](#Declaring-Validable)
 - [choose constraints](#Choosing-constraints)
-    - [optional: use ValidatorOptionsFactory](#Using-ValidatorOptionsFactory)
+    - [optional: use SortedConstraintSetFactory](#Using-SortedConstraintSetFactory)
 - [validate](#Validating)
 
 ```java
 Validator validator = new SingleThreadValidator();
 Validable<String> validable = new ValidableText("Lorem ipsum", TAG);
 
-ValidatorOptions options = new MultipleValidatorOptions.Builder()
+SortedConstraintSet constraintSet = new SortedConstraintSet.Builder()
                 .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
                 .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
                 .build();
 
-validator.validate(validable, options, new Validator.Callback() {
+validator.validate(validable, constraintSet, new Validator.Callback() {
             @Override
             public void status(Validable<?> value, ValidatorResult result) {
                 //get the result of the validation
@@ -77,7 +77,8 @@ There are three custom Validator implementation:
 - **PoolThreadValidator:** validation is done on a worker thread taken from
 a thread pool
 
-You can also use directly the **BaseValidator** class passing to it an Executor.
+You can also use directly the **BaseValidator** class passing to it an Executor, a
+ValidatorAlgorithmFactory and a main thread Handler.
 
 #### Declaring Validable
 
@@ -97,13 +98,13 @@ TAG can be null.
 #### Choosing constraints
 
 ```java
-ValidatorOptions options = new MultipleValidatorOptions.Builder()
+SortedConstraintSet constraintSet = new SortedConstraintSet.Builder()
                 .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
                 .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
                 .build();
 ```
 
-The validator is fed with ValidatorOptions that simply is a list of constraint ordered
+The validator is fed with **SortedConstraintSet** that simply is a set of constraint ordered
 in a certain manner and it processes them one by one following that order.
 
 Every constraint takes three parameters:
@@ -115,20 +116,12 @@ to pass a map if multiple errors are thrown
 In this case we are telling to the validator that the string should first not
 be empty and then its minimum length should be 6 characters.
 
-When building the ValidatorOptions then constraint are automatically ordered.
+When any constraint is added to the SortedConstraintSet then it is automatically ordered.
 
-###### Tip
-In case it is needed only one constraint it is possible to use directly SingleValidatorOption
-in this manner:
-
-```java
-ValidatorOptions options = new SingleValidatorOption(new MinLengthTextConstraint(6, 1, "minimum length is 6"));
-```
-
-##### Using ValidatorOptionsFactory
+##### Using SortedConstraintSetFactory
 It may happen that the same objects must be validated in different sections of the app so,
-in order to make code clearer, create all the ValidatorOptions for each object and retrieve
-them when necessary with **ValidatorOptionsFactory**.
+in order to make code clearer, create all the SortedConstraintSet for each object and retrieve
+them when necessary with **SortedConstraintSetFactory**.
 
 ```java
 String usernameRegex = //put your regex here
@@ -137,37 +130,37 @@ String USERNAME_TAG = //tag for the username
 String passwordRegex = //put your regex here
 String PASSWORD_TAG = //tag for the password
 
-ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet usernameConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
         .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
         .build();
 
-ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet passwordConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
         .addConstraint(new RegexTextConstraint(passwordRegex, 3, "password must contain only letters"))
         .build();
 
-Map<String, ValidatorOptions> optionsMap = new HashMap<>();
-optionsMap.put(USERNAME_TAG, usernameOptions);
-optionsMap.put(PASSWORD_TAG, passwordOptions);
+Map<String, SortedConstraintSet> constraintSetMap = new HashMap<>();
+constraintSetMap.put(USERNAME_TAG, usernameConstraintSet);
+constraintSetMap.put(PASSWORD_TAG, passwordConstraintSet);
 
-ValidatorOptionsFactory optionsFactory = new ValidatorOptionsFactory(optionsMap);
+SortedConstraintSetFactory factory = new SortedConstraintSetFactory(constraintSetMap);
 ```
 
-Later just retrieve the desidered ValidatorOptions
+Later just retrieve the desidered SortedConstraintSet.
 
 ```java
-ValidatorOptions usernameOptions = optionsFactory.getOptionsByTag(USERNAME_TAG);
+SortedConstraintSet usernameConstraintSet = factory.getConstraintSetByTag(USERNAME_TAG);
 ```
 
 #### Validating
 
 ```java
-validator.validate(validable, options, new Validator.Callback() {
+validator.validate(validable, constraintSet, new Validator.Callback() {
             @Override
             public void status(Validable<?> value, ValidatorResult result) {
                 //get the result of the validation
@@ -196,8 +189,6 @@ validator.validate(validable, constraint, new Validator.Callback() {
         });
 ```
 
-Internally it calls the SingleValidatorOption shown before.
-
 ### Bulk validation
 ```java
 Validator validator = new SingleThreadValidator();
@@ -209,27 +200,27 @@ Validable<String> password = new ValidableText("password1234", "password");
 String usernameRegex = //put your regex here
 String passwordRegex = //put your regex here
 
-ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet usernameConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
         .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
         .build();
 
-ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet passwordConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
         .addConstraint(new RegexTextConstraint(passwordRegex, 3, "password must contain only letters"))
         .build();
 
-Map<Validable<?>, ValidatorOptions> optionsMap = new HashMap<>();
-optionsMap.put(username, usernameOptions);
-optionsMap.put(password, passwordOptions);
+Map<Validable<?>, SortedConstraintSet> constraintSetByValidableMap = new HashMap<>();
+constraintSetByValidableMap.put(username, usernameConstraintSet);
+constraintSetByValidableMap.put(password, passwordConstraintSet);
 
-collectionValidator.validateCollection(optionsMap, new CollectionValidator.Callback() {
+collectionValidator.validateCollection(constraintSetByValidableMap, new CollectionValidator.Callback() {
     @Override
-    public void status(Map<Validable<?>, ValidatorResult> validableResults, ValidableCollectionStatus status) {
+    public void status(Map<Validable<?>, ValidatorResult> validatorResultByValidableMap, ValidableCollectionStatus status) {
 
     }
 });
@@ -239,7 +230,7 @@ Sometimes is useful to validate a set of validables in one shot, collectionValid
 aims to do this.
 
 - [declare BulkValidator](#Declaring-BulkValidator)
-- [Prepare ValidatorOptions map](#Preparing-ValidatorOptions-map)
+- [Prepare SortedConstraintSet map](#Preparing-SortedConstraintSet-map)
 - [validate all](#validating-all)
 
 #### Declaring BulkValidator
@@ -249,7 +240,7 @@ CollectionValidator collectionValidator = new BulkValidator(validator);
 ```
 See [declaring Validator](#Declaring-Validator) for further info. BulkValidator internally use a validator to do operations.
 
-#### Preparing ValidatorOptions map
+#### Preparing SortedConstraintSet map
 ```java
 Validable<String> username = new ValidableText("John123", "username");
 Validable<String> password = new ValidableText("password1234", "password");
@@ -257,34 +248,34 @@ Validable<String> password = new ValidableText("password1234", "password");
 String usernameRegex = //put your regex here
 String passwordRegex = //put your regex here
 
-ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet usernameConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
         .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
         .build();
 
-ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet passwordConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
         .addConstraint(new RegexTextConstraint(passwordRegex, 3, "password must contain only letters"))
         .build();
 
-Map<Validable<?>, ValidatorOptions> optionsMap = new HashMap<>();
-optionsMap.put(username, usernameOptions);
-optionsMap.put(password, passwordOptions);
+Map<Validable<?>, SortedConstraintSet> constraintSetByValidableMap = new HashMap<>();
+constraintSetByValidableMap.put(username, usernameConstraintSet);
+constraintSetByValidableMap.put(password, passwordConstraintSet);
 ```
 
 See [declaring Validable](#Declaring-Validable) and [choosing constraints](#Choosing-constraints)
 to know about them. Once done with those steps just create a map to associate
-every validable to its options.
+every validable to its constraint set.
 
 #### Validating all
 ```java
-collectionValidator.validateCollection(optionsMap, new CollectionValidator.Callback() {
+collectionValidator.validateCollection(constraintSetByValidableMap, new CollectionValidator.Callback() {
     @Override
-    public void status(Map<Validable<?>, ValidatorResult> validableResults, ValidableCollectionStatus status) {
+    public void status(Map<Validable<?>, ValidatorResult> validatorResultByValidableMap, ValidableCollectionStatus status) {
         //get the result of the bulk validation
     }
 });
@@ -304,32 +295,32 @@ Validable<String> password = new ValidableText("password1234", "password");
 String usernameRegex = //put your regex here
 String passwordRegex = //put your regex here
 
-ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet usernameConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
         .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
         .build();
 
-ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet passwordConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
         .addConstraint(new RegexTextConstraint(passwordRegex, 3, "password must contain only letters"))
         .build();
 
-Map<Validable<?>, ValidatorOptions> optionsMap = new HashMap<>();
-optionsMap.put(username, usernameOptions);
-optionsMap.put(password, passwordOptions);
+Map<Validable<?>, SortedConstraintSet> constraintSetByValidableMap = new HashMap<>();
+constraintSetByValidableMap.put(username, usernameConstraintSet);
+constraintSetByValidableMap.put(password, passwordConstraintSet);
 
-ValidatorObserver observer = new ValidatorObserver(optionsMap, new CollectionValidator.Callback() {
+ValidatorObserver observer = new ValidatorObserver(constraintSetByValidableMap, new CollectionValidator.Callback() {
     @Override
-    public void status(Map<Validable<?>, ValidatorResult> validableResults, ValidableCollectionStatus status) {
+    public void status(Map<Validable<?>, ValidatorResult> validatorResultByValidableMap, ValidableCollectionStatus status) {
         //get informations about the global state of the observed validables every time one of them is validated
     }
 });
 
-validator.validate(username, usernameOptions, observer, new Validator.Callback() {
+validator.validate(username, usernameConstraintSet, observer, new Validator.Callback() {
     @Override
     public void status(Validable<?> value, ValidatorResult result) {
         //get the result of the single validation
@@ -337,11 +328,11 @@ validator.validate(username, usernameOptions, observer, new Validator.Callback()
 });
 ```
 
-- [Prepare validator and validator options map](#Preparing-validator-and-validator-options-map)
+- [Prepare validator and SortedConstraintSet map](#Preparing-validator-and-SortedConstraintSet-map)
 - [declare ValidatorObserver](#Declare-ValidatorObserver)
 - [Validate with observer](#Validating-with-observer)
 
-#### Preparing validator and validator options map
+#### Preparing validator and SortedConstraintSet map
 ```java
 Validator validator = new SingleThreadValidator();
 
@@ -351,39 +342,39 @@ Validable<String> password = new ValidableText("password1234", "password");
 String usernameRegex = //put your regex here
 String passwordRegex = //put your regex here
 
-ValidatorOptions usernameOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet usernameConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(20, 2, "maximum length is 20"))
         .addConstraint(new RegexTextConstraint(usernameRegex, 3, "username must contain only letters"))
         .build();
 
-ValidatorOptions passwordOptions = new MultipleValidatorOptions.Builder()
+SortedConstraintSet passwordConstraintSet = new SortedConstraintSet.Builder()
         .addConstraint(new MandatoryTextConstraint(true, 0, "mandatory field"))
         .addConstraint(new MinLengthTextConstraint(6, 1, "minimum length is 6"))
         .addConstraint(new MaxLengthTextConstraint(10, 2, "maximum length is 10"))
         .addConstraint(new RegexTextConstraint(passwordRegex, 3, "password must contain only letters"))
         .build();
 
-Map<Validable<?>, ValidatorOptions> optionsMap = new HashMap<>();
-optionsMap.put(username, usernameOptions);
-optionsMap.put(password, passwordOptions);
+Map<Validable<?>, SortedConstraintSet> constraintSetByValidableMap = new HashMap<>();
+constraintSetByValidableMap.put(username, usernameConstraintSet);
+constraintSetByValidableMap.put(password, passwordConstraintSet);
 ```
 
-See [declaring Validator](#Declaring-Validator) and [preparing ValidatorOptions map](#Preparing-ValidatorOptions-map)
+See [declaring Validator](#Declaring-Validator) and [preparing SortedConstraintSet map](#Preparing-SortedConstraintSet-map)
 
 #### Declaring ValidatorObserver
 ```java
-ValidatorObserver observer = new ValidatorObserver(optionsMap, new CollectionValidator.Callback() {
+ValidatorObserver observer = new ValidatorObserver(constraintSetByValidableMap, new CollectionValidator.Callback() {
     @Override
-    public void status(Map<Validable<?>, ValidatorResult> validableResults, ValidableCollectionStatus status) {
+    public void status(Map<Validable<?>, ValidatorResult> validatorResultByValidableMap, ValidableCollectionStatus status) {
         //get informations about the global state of the observed validables every time one of them is validated
     }
 });
 ```
 
 Instantiate a new ValidatorObserver passing to it the previously created
-<Validable, ValidatorOptions> map so it is aware of the validables that
+<Validable, SortedConstraintSet> map so it is aware of the validables that
 should be observed: every time one of them is being validated then the
 observer update the global status of the validable set and invoke the callback
 that gives precise informations about all the validables and a
@@ -391,7 +382,7 @@ synthetic status that is either ALL_VALID or AT_LEAST_ONE_NOT_VALID.
 
 #### Validating with observer
 ```java
-validator.validate(username, usernameOptions, observer, new Validator.Callback() {
+validator.validate(username, usernameConstraintSet, observer, new Validator.Callback() {
     @Override
     public void status(Validable<?> value, ValidatorResult result) {
         //get the result of the single validation
@@ -485,7 +476,7 @@ can validate then a ClassCastException is thrown at runtime.
 
     The two constructors have in common:
      - **constraint:** the object that hold the constraint that should be compared to the value
-     - **evaluationPriority:** the priority used by the ValidatorOptions to order all the constraint
+     - **evaluationPriority:** the priority used by the SortedConstraintSet to order all the constraint
 
      instead are mutual exclusive **error** and **errorMap**, the first is used when only one error
      is thrown, the other when are necessary multiple errors.

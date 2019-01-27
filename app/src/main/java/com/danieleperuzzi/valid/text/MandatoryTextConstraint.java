@@ -16,8 +16,8 @@
 
 package com.danieleperuzzi.valid.text;
 
-import com.danieleperuzzi.valid.core.Constraint;
-import com.danieleperuzzi.valid.core.ConstraintResult;
+import com.danieleperuzzi.valid.core.constraint.Constraint;
+import com.danieleperuzzi.valid.core.constraint.ConstraintResult;
 import com.danieleperuzzi.valid.core.ValidableStatus;
 
 public class MandatoryTextConstraint extends Constraint<String, Boolean> {
@@ -28,7 +28,7 @@ public class MandatoryTextConstraint extends Constraint<String, Boolean> {
 
     @Override
     protected boolean shouldStopValidation(String text) {
-        return text == null || text.isEmpty();
+        return !getConstraint() && (text == null || text.isEmpty());
     }
 
     @Override
