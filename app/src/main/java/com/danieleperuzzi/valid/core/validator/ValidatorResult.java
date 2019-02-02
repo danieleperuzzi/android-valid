@@ -32,7 +32,7 @@ import java.util.Objects;
  * <p>The error message is never provided when the validation succeeded, otherwise
  * is not mandatory to attach a message after a failure, it also can be null</p>
  */
-public final class ValidatorResult {
+public class ValidatorResult {
 
     public ValidableStatus status;
 

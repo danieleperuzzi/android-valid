@@ -32,7 +32,7 @@ import java.util.TreeSet;
  * in the constraint itself, we just order them so the {@link Validator}
  * can process them one by one</p>
  */
-public final class SortedConstraintSet {
+public class SortedConstraintSet {
 
     private Set<Constraint<?, ?>> constraints;
 
@@ -48,7 +48,7 @@ public final class SortedConstraintSet {
     }
 
 
-    public final static class Builder {
+    public static class Builder {
 
         private SortedConstraintSet instance;
 

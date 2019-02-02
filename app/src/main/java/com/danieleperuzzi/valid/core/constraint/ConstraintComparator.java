@@ -23,24 +23,18 @@ import java.util.Comparator;
 /**
  * Simple comparator used by {@link SortedConstraintSet} to order the {@link Constraint}
  */
-public final class ConstraintComparator implements Comparator<Constraint<?, ?>> {
+public class ConstraintComparator implements Comparator<Constraint<?, ?>> {
 
     @Override
-    public final int compare(@NonNull Constraint firstConstraint, @NonNull Constraint secondConstraint) {
-        int result = 0;
+    public int compare(@NonNull Constraint firstConstraint, @NonNull Constraint secondConstraint) {
+        if (firstConstraint.equals(secondConstraint)) {
+            return 0;
+        }
 
         if (firstConstraint.getEvaluationPriority() < secondConstraint.getEvaluationPriority()) {
-            result = -1;
+            return -1;
+        } else {
+            return 1;
         }
-
-        if (firstConstraint.getEvaluationPriority() == secondConstraint.getEvaluationPriority()) {
-            result = 0;
-        }
-
-        if (firstConstraint.getEvaluationPriority() > secondConstraint.getEvaluationPriority()) {
-            result = 1;
-        }
-
-        return result;
     }
 }

@@ -43,7 +43,7 @@ import java.util.Map;
  * receive single validation result of all {@link Validable} in order to collect
  * them and make decisions</p>
  */
-public final class BulkValidatorProcessor implements Validator.Callback {
+public class BulkValidatorProcessor implements Validator.Callback {
 
     private int validableInstances;
     private CollectionValidator.Callback callback;

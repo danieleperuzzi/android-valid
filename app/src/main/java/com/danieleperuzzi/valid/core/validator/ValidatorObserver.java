@@ -32,7 +32,7 @@ import java.util.Map;
  * a particular {@link Validable}, checks if it should be tracked
  * and update the global status.
  */
-public final class ValidatorObserver {
+public class ValidatorObserver {
 
     private Map<Validable<?>, ValidatorResult> validatorResultByValidableMap;
     private CollectionValidator.Callback callback;

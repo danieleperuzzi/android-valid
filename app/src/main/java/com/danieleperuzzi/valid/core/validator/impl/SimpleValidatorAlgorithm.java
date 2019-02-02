@@ -35,7 +35,7 @@ import com.danieleperuzzi.valid.core.validator.ValidatorResult;
  * Defines a simplified version of the {@link ValidatorAlgorithm} used when
  * comparing a {@link Validable} to only one {@link Constraint}
  */
-public final class SimpleValidatorAlgorithm extends BaseValidatorAlgorithm {
+public class SimpleValidatorAlgorithm extends BaseValidatorAlgorithm {
 
     private Validable<?> value;
     private Constraint<?, ?> constraint;

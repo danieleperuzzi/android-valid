@@ -26,7 +26,7 @@ import com.danieleperuzzi.valid.core.constraint.SortedConstraintSet;
 /**
  * Simple class to hold the input data for any validator algorithm
  */
-public final class ValidatorAlgorithmData {
+public class ValidatorAlgorithmData {
 
     public Validable<?> value;
     public Constraint<?, ?> constraint;

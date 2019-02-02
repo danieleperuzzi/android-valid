@@ -27,7 +27,7 @@ import java.util.Map;
  * This class implements the {@link CollectionValidator} interface and aims to provide a
  * convenient way to validate a set of {@link Validable} in one shot.
  */
-public final class BulkValidator implements CollectionValidator {
+public class BulkValidator implements CollectionValidator {
 
     private Validator validator;
     private BulkValidatorProcessorFactory factory;

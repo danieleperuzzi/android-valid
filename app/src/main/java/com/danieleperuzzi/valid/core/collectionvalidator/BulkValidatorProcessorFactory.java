@@ -22,7 +22,7 @@ import com.danieleperuzzi.valid.core.CollectionValidator;
  * Used by the {@link BulkValidator} to get new {@link BulkValidatorProcessor}
  * every time it needs.
  */
-public final class BulkValidatorProcessorFactory {
+public class BulkValidatorProcessorFactory {
 
     public BulkValidatorProcessorFactory() {
     }

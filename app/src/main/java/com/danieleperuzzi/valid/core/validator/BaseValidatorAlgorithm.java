@@ -41,7 +41,7 @@ public abstract class BaseValidatorAlgorithm implements Runnable {
      * @param result    the result of the computation, see {@link ValidatorAlgorithmResult} for more
      *                  informations
      */
-    protected final void postResult(ValidatorAlgorithmResult result) {
+    protected void postResult(ValidatorAlgorithmResult result) {
         if (callback != null) {
             callback.postValidatorAlgorithmResult(result);
         }

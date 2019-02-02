@@ -18,10 +18,8 @@ package com.danieleperuzzi.valid.core.validator;
 
 import android.support.annotation.Nullable;
 
-import com.danieleperuzzi.valid.core.validator.impl.SimpleValidatorAlgorithm;
 import com.danieleperuzzi.valid.core.Validable;
 import com.danieleperuzzi.valid.core.Validator;
-import com.danieleperuzzi.valid.core.validator.impl.ValidatorAlgorithm;
 
 /**
  * This class encapsulates the result of the computation done by any
@@ -30,11 +28,11 @@ import com.danieleperuzzi.valid.core.validator.impl.ValidatorAlgorithm;
  * <p>Currently are defined two algorithms:</p>
  *
  * <ul>
- *     <li>{@link SimpleValidatorAlgorithm}</li>
- *     <li>{@link ValidatorAlgorithm}</li>
+ *     <li>{@link com.danieleperuzzi.valid.core.validator.impl.SimpleValidatorAlgorithm}</li>
+ *     <li>{@link com.danieleperuzzi.valid.core.validator.impl.ValidatorAlgorithm}</li>
  * </ul>
  */
-public final class ValidatorAlgorithmResult {
+public class ValidatorAlgorithmResult {
 
     public Validable<?> value;
     public ValidatorResult result;

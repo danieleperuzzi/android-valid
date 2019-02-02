@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * Defines the main validator algorithm.
  */
-public final class ValidatorAlgorithm extends BaseValidatorAlgorithm {
+public class ValidatorAlgorithm extends BaseValidatorAlgorithm {
 
     private Validable<?> value;
     private SortedConstraintSet constraintSet;

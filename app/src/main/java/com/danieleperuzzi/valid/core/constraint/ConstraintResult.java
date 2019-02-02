@@ -26,7 +26,7 @@ import com.danieleperuzzi.valid.core.ValidableStatus;
  * <p>The error message is never provided when the validation succeeded, otherwise
  * is not mandatory to attach a message after a failure, it also can be null</p>
  */
-public final class ConstraintResult {
+public class ConstraintResult {
 
     public ValidableStatus status;
 

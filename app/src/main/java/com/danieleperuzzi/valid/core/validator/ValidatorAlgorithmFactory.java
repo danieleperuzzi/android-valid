@@ -29,10 +29,10 @@ import com.danieleperuzzi.valid.core.validator.impl.ValidatorAlgorithm;
  *     <li>{@link SimpleValidatorAlgorithm}</li>
  * </ul>
  */
-public final class ValidatorAlgorithmFactory {
+public class ValidatorAlgorithmFactory {
 
-    private static final int SIMPLE_VALIDATOR_ALGORITHM = 0;
-    private static final int VALIDATOR_ALGORITHM = 1;
+    private final int SIMPLE_VALIDATOR_ALGORITHM = 0;
+    private final int VALIDATOR_ALGORITHM = 1;
 
     BaseValidatorAlgorithm createValidatorAlgorithm(ValidatorAlgorithmData data, ValidatorAlgorithmCallback callback) {
         int algorithmType = validatorAlgorithmChooser(data);

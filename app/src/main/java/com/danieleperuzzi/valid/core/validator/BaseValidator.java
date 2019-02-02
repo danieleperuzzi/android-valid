@@ -76,7 +76,7 @@ public class BaseValidator implements Validator {
      * @param callback   {@link Callback} used to post the validation result
      */
     @MainThread
-    public final void validate(Validable<?> value, Constraint<?, ?> constraint, Callback callback) {
+    public void validate(Validable<?> value, Constraint<?, ?> constraint, Callback callback) {
         startValidation(value, constraint, null, null, callback);
     }
 
@@ -90,7 +90,7 @@ public class BaseValidator implements Validator {
      * @param callback   {@link Callback} used to post the validation result
      */
     @MainThread
-    public final void validate(Validable<?> value, Constraint<?, ?> constraint, @Nullable ValidatorObserver observer, Callback callback) {
+    public void validate(Validable<?> value, Constraint<?, ?> constraint, @Nullable ValidatorObserver observer, Callback callback) {
         startValidation(value, constraint, null, observer, callback);
     }
 
@@ -104,7 +104,7 @@ public class BaseValidator implements Validator {
      * @param callback          {@link Callback} used to post the validation result
      */
     @MainThread
-    public final void validate(Validable<?> value, SortedConstraintSet constraintSet, Callback callback) {
+    public void validate(Validable<?> value, SortedConstraintSet constraintSet, Callback callback) {
         startValidation(value, null, constraintSet, null, callback);
     }
 
@@ -118,7 +118,7 @@ public class BaseValidator implements Validator {
      * @param callback          {@link Callback} used to post the validation result
      */
     @MainThread
-    public final void validate(Validable<?> value, SortedConstraintSet constraintSet, @Nullable ValidatorObserver observer, Validator.Callback callback) {
+    public void validate(Validable<?> value, SortedConstraintSet constraintSet, @Nullable ValidatorObserver observer, Validator.Callback callback) {
         startValidation(value, null, constraintSet, observer, callback);
     }
 

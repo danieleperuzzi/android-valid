@@ -22,6 +22,7 @@ import android.os.Looper;
 import com.danieleperuzzi.valid.core.validator.BaseValidator;
 import com.danieleperuzzi.valid.core.validator.ValidatorAlgorithmFactory;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class SingleThreadValidator extends BaseValidator {
@@ -31,6 +32,10 @@ public class SingleThreadValidator extends BaseValidator {
     private static final Handler mainThreadHandler = new Handler(mainThreadLooper);
 
     public SingleThreadValidator() {
-        super(Executors.newSingleThreadExecutor(), factory, mainThreadHandler);
+        this(Executors.newSingleThreadExecutor(), factory, mainThreadHandler);
+    }
+
+    protected SingleThreadValidator(Executor executor, ValidatorAlgorithmFactory factory, Handler mainThreadHandler) {
+        super(executor, factory, mainThreadHandler);
     }
 }

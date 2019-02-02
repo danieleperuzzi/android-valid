@@ -19,6 +19,7 @@ package com.danieleperuzzi.valid.core.constraint;
 import com.danieleperuzzi.valid.core.Validable;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This Class exposes methods that are used by the Validator to perform essential
@@ -51,19 +52,19 @@ public abstract class Constraint<V, C> {
     private String error;
     private Map<String, String> errorMap;
 
-    protected final C getConstraint() {
+    protected C getConstraint() {
         return constraint;
     }
 
-    protected final int getEvaluationPriority() {
+    protected int getEvaluationPriority() {
         return evaluationPriority;
     }
 
-    protected final String getError() {
+    protected String getError() {
         return error;
     }
 
-    protected final Map<String, String> getErrorMap() {
+    protected Map<String, String> getErrorMap() {
         return errorMap;
     }
 
@@ -134,7 +135,7 @@ public abstract class Constraint<V, C> {
      * @return                      the result of the operation that is a status
      *                              and an optional error message
      */
-     public final ConstraintResult evaluate(Validable<?> value) {
+     public ConstraintResult evaluate(Validable<?> value) {
         V concreteValue = tryToGetConcreteValidableValue(value);
         return evaluate(concreteValue);
      }
@@ -165,7 +166,7 @@ public abstract class Constraint<V, C> {
      *              we need it to take decision about the validation process
      * @return      tell the Validator if it should go on or stop
      */
-     public final boolean shouldStopValidation(Validable<?> value) {
+     public boolean shouldStopValidation(Validable<?> value) {
         V concreteValue = tryToGetConcreteValidableValue(value);
         return shouldStopValidation(concreteValue);
      }
@@ -184,4 +185,50 @@ public abstract class Constraint<V, C> {
      * @return      tell the Validator if it should go on or stop
      */
     protected abstract boolean shouldStopValidation(V value);
+
+    /**
+     * The equality between objects consider the fact that their respective
+     * classes should be strictly the same to avoid the case in which one
+     * can extend the class that extends this one overriding one method
+     * leading to inconsistencies when comparing them.
+     *
+     * <p>Consider this scenario:</p>
+     * <ul>
+     *     <li>A extends Constraint</li>
+     *     <li>B extends A and override evaluate method</li>
+     * </ul>
+     *
+     * <p>A and B are different because behave differently but when comparing
+     * them through equals, if instantiated with same parameters, they results
+     * to be equal when it's not true.</p>
+     *
+     * <p>If the comparison is done checking equality on the classes then this
+     * case won't happen.</p>
+     *
+     * @param obj   the object to compare
+     * @return      true or false according to the logic
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        Constraint<?, ?> that = (Constraint<?, ?>) obj;
+
+        return getEvaluationPriority() == that.getEvaluationPriority() &&
+                Objects.equals(getConstraint(), that.getConstraint()) &&
+                Objects.equals(getError(), that.getError()) &&
+                Objects.equals(getErrorMap(), that.getErrorMap());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getConstraint(), getEvaluationPriority(), getError(), getErrorMap());
+    }
 }
